@@ -111,4 +111,45 @@ public class Member extends User {
         // cancelling reservation logic will be implemented here
         return true;
     }
+
+    // Manual JSON serialization
+    public String toJson() {
+        return String.format("{\"userID\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"name\":\"%s\",\"memberShipType\":\"%s\",\"memberShipStart\":%d,\"memberShipEnd\":%d,\"isActive\":%b,\"height\":%f,\"weight\":%f}",
+                getUserID(), getPassword(), getEmail(), getName(),
+                memberShipType.name(),
+                memberShipStart.getTime(),
+                memberShipEnd.getTime(),
+                isActive, height, weight);
+    }
+
+    public static Member fromJson(String json) {
+        // Very basic parsing, assumes well-formed input
+        String[] parts = json.replace("{", "").replace("}", "").replace("\"", "").split(",");
+        String userID = "", password = "", email = "", name = "";
+        MembershipType memberShipType = MembershipType.BASIC;
+        Date memberShipStart = new Date();
+        Date memberShipEnd = new Date();
+        boolean isActive = true;
+        float height = 0;
+        double weight = 0;
+        for (String part : parts) {
+            String[] kv = part.split(":");
+            if (kv.length < 2) continue;
+            switch (kv[0]) {
+                case "userID": userID = kv[1]; break;
+                case "password": password = kv[1]; break;
+                case "email": email = kv[1]; break;
+                case "name": name = kv[1]; break;
+                case "memberShipType": memberShipType = MembershipType.valueOf(kv[1]); break;
+                case "memberShipStart": memberShipStart = new Date(Long.parseLong(kv[1])); break;
+                case "memberShipEnd": memberShipEnd = new Date(Long.parseLong(kv[1])); break;
+                case "isActive": isActive = Boolean.parseBoolean(kv[1]); break;
+                case "height": height = Float.parseFloat(kv[1]); break;
+                case "weight": weight = Double.parseDouble(kv[1]); break;
+            }
+        }
+        Member m = new Member(userID, password, email, name, memberShipType, memberShipStart, memberShipEnd, height, weight);
+        m.setActive(isActive);
+        return m;
+    }
 } 
