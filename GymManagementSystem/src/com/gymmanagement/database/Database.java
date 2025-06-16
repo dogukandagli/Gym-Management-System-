@@ -1,15 +1,20 @@
 package com.gymmanagement.database;
 
-import com.gymmanagement.model.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gymmanagement.model.Admin;
+import com.gymmanagement.model.ClassSession;
+import com.gymmanagement.model.Coach;
+import com.gymmanagement.model.Member;
+import com.gymmanagement.model.User;
+
 public class Database {
     private static Database instance;
-    private final String MEMBERS_FILE = "data/members.json";
-    private final String COACHES_FILE = "data/coaches.json";
-    private final String ADMINS_FILE = "data/admins.json";
+    private final String MEMBERS_FILE = "data/Member.json";
+    private final String COACHES_FILE = "data/coach.json";
+    private final String ADMINS_FILE = "data/Admin.json";
     private final String CLASSES_FILE = "data/classes.json";
 
     private Database() {
@@ -32,79 +37,207 @@ public class Database {
 
     // Member operations
     public void saveMembers(List<Member> members) {
-        // Implementation needed
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(MEMBERS_FILE))) {
+            for (Member m : members) {
+                writer.write(m.toJson());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Member> loadMembers() {
-        // Implementation needed
-        return new ArrayList<>();
+        List<Member> members = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(MEMBERS_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                members.add(Member.fromJson(line));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return members;
+    }
+
+    public void addMember(Member member) {
+        List<Member> members = loadMembers();
+        members.add(member);
+        saveMembers(members);
+    }
+
+    public Member findMemberById(String userId) {
+        for (Member m : loadMembers()) {
+            if (m.getUserID().equals(userId)) {
+                return m;
+            }
+        }
+        return null;
     }
 
     // Coach operations
     public void saveCoaches(List<Coach> coaches) {
-        // Implementation needed
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(COACHES_FILE))) {
+            for (Coach c : coaches) {
+                writer.write(c.toJson());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Coach> loadCoaches() {
-        // Implementation needed
-        return new ArrayList<>();
+        List<Coach> coaches = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(COACHES_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                coaches.add(Coach.fromJson(line));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return coaches;
+    }
+
+    public void addCoach(Coach coach) {
+        List<Coach> coaches = loadCoaches();
+        coaches.add(coach);
+        saveCoaches(coaches);
+    }
+
+    public Coach findCoachById(String userId) {
+        for (Coach c : loadCoaches()) {
+            if (c.getUserID().equals(userId)) {
+                return c;
+            }
+        }
+        return null;
     }
 
     // Admin operations
     public void saveAdmins(List<Admin> admins) {
-        // Implementation needed
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ADMINS_FILE))) {
+            for (Admin a : admins) {
+                writer.write(a.toJson());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Admin> loadAdmins() {
-        // Implementation needed
-        return new ArrayList<>();
-    }
-
-    // Class operations
-    public void saveClasses(List<ClassSession> classes) {
-        // Implementation needed
-    }
-
-    public List<ClassSession> loadClasses() {
-        // Implementation needed
-        return new ArrayList<>();
-    }
-
-    // Utility methods for managing individual records
-    public void addMember(Member member) {
-        // Implementation needed
-    }
-
-    public void addCoach(Coach coach) {
-        // Implementation needed
+        List<Admin> admins = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(ADMINS_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                admins.add(Admin.fromJson(line));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return admins;
     }
 
     public void addAdmin(Admin admin) {
-        // Implementation needed
-    }
-
-    public void addClass(ClassSession classSession) {
-        // Implementation needed
-    }
-
-    // Search methods
-    public Member findMemberById(String userId) {
-        // Implementation needed
-        return null;
-    }
-
-    public Coach findCoachById(String userId) {
-        // Implementation needed
-        return null;
+        List<Admin> admins = loadAdmins();
+        admins.add(admin);
+        saveAdmins(admins);
     }
 
     public Admin findAdminById(String userId) {
-        // Implementation needed
+        for (Admin a : loadAdmins()) {
+            if (a.getUserID().equals(userId)) {
+                return a;
+            }
+        }
         return null;
     }
 
+    // ClassSession operations
+    public void saveClasses(List<ClassSession> classes) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(CLASSES_FILE))) {
+            for (ClassSession c : classes) {
+                writer.write(c.toJson());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<ClassSession> loadClasses() {
+        List<ClassSession> classes = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(CLASSES_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                classes.add(ClassSession.fromJson(line));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return classes;
+    }
+
+    public void addClass(ClassSession classSession) {
+        List<ClassSession> classes = loadClasses();
+        classes.add(classSession);
+        saveClasses(classes);
+    }
+
     public ClassSession findClassByName(String name) {
-        // Implementation needed
+        for (ClassSession c : loadClasses()) {
+            if (c.getName().equalsIgnoreCase(name)) {
+                return c;
+            }
+        }
         return null;
     }
-} 
+
+    public User getUserByEmail(String email) {
+        for (Member m : loadMembers()) {
+            if (m.getEmail().equalsIgnoreCase(email)) return m;
+        }
+        for (Admin a : loadAdmins()) {
+            if (a.getEmail().equalsIgnoreCase(email)) return a;
+        }
+        for (Coach c : loadCoaches()) {
+            if (c.getEmail().equalsIgnoreCase(email)) return c;
+        }
+        return null;
+    }
+    
+    public void updateClassSession(ClassSession updatedClass) {
+        List<ClassSession> classes = loadClasses();
+        for (int i = 0; i < classes.size(); i++) {
+            if (classes.get(i).getName().equalsIgnoreCase(updatedClass.getName())) {
+                classes.set(i, updatedClass);
+                break;
+            }
+        }
+        saveClasses(classes);
+    }
+    
+    public void updateMember(Member updateMember) {
+        List<Member> members = loadMembers();
+        for (int i = 0; i < members.size(); i++) {
+            if (members.get(i).getName().equalsIgnoreCase(updateMember.getName())) {
+            	members.set(i, updateMember);
+                break;
+            }
+        }
+        saveMembers(members);
+    }
+    
+    public void updateCoach(Coach updateCoach) {
+        List<Coach> coach = loadCoaches();
+        for (int i = 0; i < coach.size(); i++) {
+            if (coach.get(i).getName().equalsIgnoreCase(updateCoach.getName())) {
+            	coach.set(i, updateCoach);
+                break;
+            }
+        }
+        saveCoaches(coach);
+    }
+}

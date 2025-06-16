@@ -8,13 +8,14 @@ public class Member extends User {
     private Date memberShipStart;
     private Date memberShipEnd;
     private boolean isActive;
-    private float height;
+    private double height;
     private double weight;
+    public int ID;
 
-    public Member(String userID, String password, String email, String name,
+    public Member(String userID, String password, String email, String name,String role,
                  MembershipType memberShipType, Date memberShipStart, Date memberShipEnd,
-                 float height, double weight) {
-        super(userID, password, email, name);
+                 double height, double weight) {
+        super(userID, password, email, name,role);
         this.memberShipType = memberShipType;
         this.memberShipStart = memberShipStart;
         this.memberShipEnd = memberShipEnd;
@@ -64,7 +65,7 @@ public class Member extends User {
         isActive = active;
     }
 
-    public float getHeight() {
+    public double getHeight() {
         return height;
     }
 
@@ -79,6 +80,9 @@ public class Member extends User {
     public void setWeight(double weight) {
         this.weight = weight;
     }
+    public int getId() {
+        return ID;
+    }
 
     // Member-specific methods
     public List<MembershipType> findMemberShipPlans() {
@@ -87,7 +91,6 @@ public class Member extends User {
     }
 
     public void viewMembershipPlans() {
-        // display membership plans logic will be implemented here
         System.out.println("Available Membership Plans:");
         for (MembershipType type : MembershipType.values()) {
             System.out.println("- " + type);
@@ -114,8 +117,8 @@ public class Member extends User {
 
     // Manual JSON serialization
     public String toJson() {
-        return String.format("{\"userID\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"name\":\"%s\",\"memberShipType\":\"%s\",\"memberShipStart\":%d,\"memberShipEnd\":%d,\"isActive\":%b,\"height\":%f,\"weight\":%f}",
-                getUserID(), getPassword(), getEmail(), getName(),
+        return String.format( "{\"userID\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"name\":\"%s\",\"role\":\"%s\",\"memberShipType\":\"%s\",\"memberShipStart\":%d,\"memberShipEnd\":%d,\"isActive\":%b,\"height\":%f,\"weight\":%f}",
+                getUserID(), getPassword(), getEmail(), getName(),getRole(),
                 memberShipType.name(),
                 memberShipStart.getTime(),
                 memberShipEnd.getTime(),
@@ -123,33 +126,36 @@ public class Member extends User {
     }
 
     public static Member fromJson(String json) {
-        // Very basic parsing, assumes well-formed input
         String[] parts = json.replace("{", "").replace("}", "").replace("\"", "").split(",");
-        String userID = "", password = "", email = "", name = "";
+        String userID = "", password = "", email = "", name = "", role = "";
         MembershipType memberShipType = MembershipType.BASIC;
         Date memberShipStart = new Date();
         Date memberShipEnd = new Date();
         boolean isActive = true;
         float height = 0;
         double weight = 0;
+
         for (String part : parts) {
-            String[] kv = part.split(":");
+            String[] kv = part.split(":", 2);
             if (kv.length < 2) continue;
-            switch (kv[0]) {
-                case "userID": userID = kv[1]; break;
-                case "password": password = kv[1]; break;
-                case "email": email = kv[1]; break;
-                case "name": name = kv[1]; break;
-                case "memberShipType": memberShipType = MembershipType.valueOf(kv[1]); break;
-                case "memberShipStart": memberShipStart = new Date(Long.parseLong(kv[1])); break;
-                case "memberShipEnd": memberShipEnd = new Date(Long.parseLong(kv[1])); break;
-                case "isActive": isActive = Boolean.parseBoolean(kv[1]); break;
-                case "height": height = Float.parseFloat(kv[1]); break;
-                case "weight": weight = Double.parseDouble(kv[1]); break;
+            switch (kv[0].trim()) {
+                case "userID": userID = kv[1].trim(); break;
+                case "password": password = kv[1].trim(); break;
+                case "email": email = kv[1].trim(); break;
+                case "name": name = kv[1].trim(); break;
+                case "role": role = kv[1].trim(); break;
+                case "memberShipType": memberShipType = MembershipType.valueOf(kv[1].trim()); break;
+                case "memberShipStart": memberShipStart = new Date(Long.parseLong(kv[1].trim())); break;
+                case "memberShipEnd": memberShipEnd = new Date(Long.parseLong(kv[1].trim())); break;
+                case "isActive": isActive = Boolean.parseBoolean(kv[1].trim()); break;
+                case "height": height = Float.parseFloat(kv[1].trim()); break;
+                case "weight": weight = Double.parseDouble(kv[1].trim()); break;
             }
         }
-        Member m = new Member(userID, password, email, name, memberShipType, memberShipStart, memberShipEnd, height, weight);
+
+        Member m = new Member(userID, password, email, name, role, memberShipType, memberShipStart, memberShipEnd, height, weight);
         m.setActive(isActive);
         return m;
     }
+
 } 

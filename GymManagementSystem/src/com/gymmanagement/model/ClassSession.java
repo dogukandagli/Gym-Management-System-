@@ -3,7 +3,7 @@ package com.gymmanagement.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.time.format.DateTimeFormatter;
 public class ClassSession {
     private String name;
     private String description;
@@ -88,24 +88,36 @@ public class ClassSession {
 
     // Manual JSON serialization
     public String toJson() {
-        return String.format("{\"name\":\"%s\",\"description\":\"%s\",\"dateTime\":\"%s\",\"capacity\":%d,\"coachID\":\"%s\"}",
-                name, description, dateTime.toString(), capacity, coach != null ? coach.getUserID() : "");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        String formattedDate = dateTime.format(formatter);
+
+        return String.format(
+            "{\"name\":\"%s\",\"description\":\"%s\",\"dateTime\":\"%s\",\"capacity\":%d,\"coachID\":\"%s\"}",
+            name, description, formattedDate, capacity, coach != null ? coach.getUserID() : ""
+        );
     }
 
-    public static ClassSession fromJson(String json, Coach coach) {
+    public static ClassSession fromJson(String json) {
         String[] parts = json.replace("{", "").replace("}", "").replace("\"", "").split(",");
-        String name = "", description = "", dateTimeStr = "";
+        String name = "", description = "", dateTimeStr = "", coachID = "";
         int capacity = 0;
+
         for (String part : parts) {
-            String[] kv = part.split(":");
+            String[] kv = part.split(":", 2);
             if (kv.length < 2) continue;
             switch (kv[0]) {
                 case "name": name = kv[1]; break;
                 case "description": description = kv[1]; break;
                 case "dateTime": dateTimeStr = kv[1]; break;
                 case "capacity": capacity = Integer.parseInt(kv[1]); break;
+                case "coachID": coachID = kv[1]; break;
             }
         }
-        return new ClassSession(name, description, java.time.LocalDateTime.parse(dateTimeStr), capacity, coach);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]");
+        LocalDateTime parsedDate = LocalDateTime.parse(dateTimeStr, formatter);
+
+        Coach coach = com.gymmanagement.database.Database.getInstance().findCoachById(coachID);
+        return new ClassSession(name, description, parsedDate, capacity, coach);
     }
-} 
+}

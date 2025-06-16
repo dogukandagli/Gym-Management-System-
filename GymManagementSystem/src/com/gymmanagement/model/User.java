@@ -5,15 +5,23 @@ public abstract class User {
     private String password;
     private String email;
     private String name;
-
+    private String role;
     // Constructor
-    public User(String userID, String password, String email, String name) {
+    public User(String userID, String password, String email, String name,String role) {
         this.userID = userID;
         this.password = password;
         this.email = email;
         this.name = name;
+        this.role = role;
     }
-
+    
+    public String getRole() {
+        return role;
+    }
+    public void setRole(String role) {
+        this.role = role;
+    }
+    
     // Abstract method for login
     public abstract boolean login(String userID, String password);
 

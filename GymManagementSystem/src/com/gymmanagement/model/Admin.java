@@ -1,15 +1,16 @@
 package com.gymmanagement.model;
 
 import java.util.List;
+
+import com.gymmanagement.database.Database;
+
 import java.util.ArrayList;
 
 public class Admin extends User {
-    private String role;
     private boolean isActive;
 
     public Admin(String userID, String password, String email, String name, String role) {
-        super(userID, password, email, name);
-        this.role = role;
+        super(userID, password, email, name,role);
         this.isActive = true;
     }
 
@@ -19,13 +20,7 @@ public class Admin extends User {
     }
 
     // Getters and Setters
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
+    
 
     public boolean isActive() {
         return isActive;
@@ -35,23 +30,18 @@ public class Admin extends User {
         isActive = active;
     }
 
-    // Admin-specific methods
-    public Member addMember(String userID, String password, String email, String name,
-                          MembershipType membershipType, float height, double weight) {
-        Member newMember = new Member(userID, password, email, name, membershipType,
-                                    new java.util.Date(), // start date
-                                    new java.util.Date(System.currentTimeMillis() + (365L * 24 * 60 * 60 * 1000)), // 1 year from now
-                                    height, weight);
-        return newMember;
+    public void addMember(Member member) {
+       Database.getInstance().addMember(member);
     }
 
     public void removeMember(Member member) {
         member.setActive(false);
+        Database.getInstance().updateMember(member);
     }
 
     public List<Member> manageMembers(List<Member> members) {
-        // Implementation for managing members (viewing, filtering, etc.)
-        return new ArrayList<>(members);
+        List<Member> member = Database.getInstance().loadMembers();
+        return member;
     }
 
     public void assignCoach(ClassSession classSession, Coach coach) {
@@ -67,21 +57,48 @@ public class Admin extends User {
         // Implementation for handling payments
         System.out.println("Processing payment of $" + amount + " for member " + member.getName());
     }
-
+    public void updateClassSession(ClassSession updatedClass) {
+        Database.getInstance().updateClassSession(updatedClass);
+    }
+   
     public void editMembershipPlans() {
         // Implementation for editing membership plans
         System.out.println("Editing membership plans...");
     }
-
-    public Coach addCoach(String userID, String password, String email, String name,
-                         int experienceYears, String bio) {
-        return new Coach(userID, password, email, name, experienceYears, bio);
+    
+    public void printActiveMemberStats() {
+        List<Member> members = Database.getInstance().loadMembers();
+        long activeCount = members.stream().filter(Member::isActive).count();
+        System.out.println("Aktif üye sayısı: " + activeCount);
     }
 
+    public void addCoach(Coach coach) {
+    	Database.getInstance().addCoach(coach);
+    }
+
+    public void listAllClasses() {
+        List<ClassSession> classes = Database.getInstance().loadClasses();
+        for (ClassSession c : classes) {
+            System.out.println("- " + c.getName() + " | Koç: " + (c.getCoach() != null ? c.getCoach().getName() : "Yok"));
+        }
+    }
+    public  void listMembers() {
+        List<Member> members = Database.getInstance().loadMembers();
+        for (Member m : members) {
+            System.out.println("- " + m.getUserID() + " | " + m.getName() + " | " + m.getEmail());
+        }
+   }
+   
+   public void listCoach() {
+        List<Coach> coach = Database.getInstance().loadCoaches();
+        for (Coach m : coach) {
+            System.out.println("- " + m.getUserID() + " | " + m.getName() + " | " + m.getEmail());
+        }
+   }
     // Manual JSON serialization
     public String toJson() {
         return String.format("{\"userID\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"name\":\"%s\",\"role\":\"%s\",\"isActive\":%b}",
-                getUserID(), getPassword(), getEmail(), getName(), role, isActive);
+                getUserID(), getPassword(), getEmail(), getName(),getRole(), isActive);
     }
 
     public static Admin fromJson(String json) {
