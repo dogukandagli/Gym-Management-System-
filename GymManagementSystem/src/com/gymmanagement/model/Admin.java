@@ -9,8 +9,8 @@ import java.util.ArrayList;
 public class Admin extends User {
     private boolean isActive;
 
-    public Admin(String userID, String password, String email, String name, String role) {
-        super(userID, password, email, name,role);
+    public Admin(String userID, String password, String email, String name, String role,Gym gym) {
+        super(userID, password, email, name,role,gym);
         this.isActive = true;
     }
 
@@ -96,28 +96,37 @@ public class Admin extends User {
         }
    }
     // Manual JSON serialization
-    public String toJson() {
-        return String.format("{\"userID\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"name\":\"%s\",\"role\":\"%s\",\"isActive\":%b}",
-                getUserID(), getPassword(), getEmail(), getName(),getRole(), isActive);
-    }
+   public String toJson() {
+	    return String.format(
+	        "{\"userID\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"name\":\"%s\",\"role\":\"%s\",\"isActive\":%b,\"gymID\":\"%s\"}",
+	        getUserID(), getPassword(), getEmail(), getName(), getRole(), isActive,
+	        getGym() != null ? getGym().getGymID() : ""
+	    );
+	}
+
 
     public static Admin fromJson(String json) {
         String[] parts = json.replace("{", "").replace("}", "").replace("\"", "").split(",");
-        String userID = "", password = "", email = "", name = "", role = "";
+        String userID = "", password = "", email = "", name = "", role = "", gymID = "";
         boolean isActive = true;
+
         for (String part : parts) {
-            String[] kv = part.split(":");
+            String[] kv = part.split(":", 2);
             if (kv.length < 2) continue;
-            switch (kv[0]) {
-                case "userID": userID = kv[1]; break;
-                case "password": password = kv[1]; break;
-                case "email": email = kv[1]; break;
-                case "name": name = kv[1]; break;
-                case "role": role = kv[1]; break;
-                case "isActive": isActive = Boolean.parseBoolean(kv[1]); break;
+
+            switch (kv[0].trim()) {
+                case "userID": userID = kv[1].trim(); break;
+                case "password": password = kv[1].trim(); break;
+                case "email": email = kv[1].trim(); break;
+                case "name": name = kv[1].trim(); break;
+                case "role": role = kv[1].trim(); break;
+                case "isActive": isActive = Boolean.parseBoolean(kv[1].trim()); break;
+                case "gymID": gymID = kv[1].trim(); break;
             }
         }
-        Admin a = new Admin(userID, password, email, name, role);
+
+        Gym gym = com.gymmanagement.database.Database.getInstance().findGymById(gymID);
+        Admin a = new Admin(userID, password, email, name, role,gym);
         a.setActive(isActive);
         return a;
     }

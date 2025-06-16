@@ -130,7 +130,7 @@ public class AdminPanel {
 	    Date startDate = new java.util.Date(); 
 	    Date endDate = new java.util.Date(System.currentTimeMillis() + (365L * 24 * 60 * 60 * 1000)); 
 
-	    Member newMember = new Member(userID,password,email,name,role,membershipType,startDate,endDate,height,weight);
+	    Member newMember = new Member(userID,password,email,name,role,admin.getGym(),membershipType,startDate,endDate,height,weight);
 
 	    admin.addMember(newMember);
 	    System.out.println("✅ Yeni üye başarıyla eklendi: " + name);
@@ -158,7 +158,7 @@ public class AdminPanel {
           System.out.print("Hakkında kısa bilgi (bio): ");
           String bio = scanner.nextLine();
 
-          Coach newCoach = new Coach(userID, password, email, name1, role, experienceYears, bio);
+          Coach newCoach = new Coach(userID, password, email, name1, role,admin.getGym(), experienceYears, bio);
           admin.addCoach(newCoach);
 	}
 

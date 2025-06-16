@@ -7,6 +7,7 @@ import java.util.List;
 import com.gymmanagement.model.Admin;
 import com.gymmanagement.model.ClassSession;
 import com.gymmanagement.model.Coach;
+import com.gymmanagement.model.Gym;
 import com.gymmanagement.model.Member;
 import com.gymmanagement.model.User;
 
@@ -16,6 +17,8 @@ public class Database {
     private final String COACHES_FILE = "data/coach.json";
     private final String ADMINS_FILE = "data/Admin.json";
     private final String CLASSES_FILE = "data/classes.json";
+    private final String GYMS_FILE = "data/gyms.json";
+
 
     private Database() {
         createDataDirectory();
@@ -36,6 +39,42 @@ public class Database {
     }
 
     // Member operations
+    public void saveGyms(List<Gym> gyms) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(GYMS_FILE))) {
+            for (Gym g : gyms) {
+                writer.write(g.toJson());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public List<Gym> loadGyms() {
+        List<Gym> gyms = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(GYMS_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                gyms.add(Gym.fromJson(line));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return gyms;
+    }
+    public void addGym(Gym gym) {
+        List<Gym> gyms = loadGyms();
+        gyms.add(gym);
+        saveGyms(gyms);
+    }
+    public Gym findGymById(String id) {
+        for (Gym g : loadGyms()) {
+            if (g.getId().equalsIgnoreCase(id)) {
+                return g;
+            }
+        }
+        return null;
+    }
+
     public void saveMembers(List<Member> members) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(MEMBERS_FILE))) {
             for (Member m : members) {

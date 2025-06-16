@@ -12,10 +12,10 @@ public class Member extends User {
     private double weight;
     public int ID;
 
-    public Member(String userID, String password, String email, String name,String role,
+    public Member(String userID, String password, String email, String name,String role,Gym gym,
                  MembershipType memberShipType, Date memberShipStart, Date memberShipEnd,
                  double height, double weight) {
-        super(userID, password, email, name,role);
+        super(userID, password, email, name,role,gym);
         this.memberShipType = memberShipType;
         this.memberShipStart = memberShipStart;
         this.memberShipEnd = memberShipEnd;
@@ -117,17 +117,22 @@ public class Member extends User {
 
     // Manual JSON serialization
     public String toJson() {
-        return String.format( "{\"userID\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"name\":\"%s\",\"role\":\"%s\",\"memberShipType\":\"%s\",\"memberShipStart\":%d,\"memberShipEnd\":%d,\"isActive\":%b,\"height\":%f,\"weight\":%f}",
-                getUserID(), getPassword(), getEmail(), getName(),getRole(),
-                memberShipType.name(),
-                memberShipStart.getTime(),
-                memberShipEnd.getTime(),
-                isActive, height, weight);
+        return String.format(
+            "{\"userID\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"name\":\"%s\",\"role\":\"%s\",\"memberShipType\":\"%s\",\"memberShipStart\":%d,\"memberShipEnd\":%d,\"isActive\":%b,\"height\":%f,\"weight\":%f,\"gymID\":\"%s\"}",
+            getUserID(), getPassword(), getEmail(), getName(), getRole(),
+            memberShipType.name(),
+            memberShipStart.getTime(),
+            memberShipEnd.getTime(),
+            isActive, height, weight,
+            getGym() != null ? getGym().getGymID() : ""
+        );
     }
+
 
     public static Member fromJson(String json) {
         String[] parts = json.replace("{", "").replace("}", "").replace("\"", "").split(",");
-        String userID = "", password = "", email = "", name = "", role = "";
+
+        String userID = "", password = "", email = "", name = "", role = "", gymID = "";
         MembershipType memberShipType = MembershipType.BASIC;
         Date memberShipStart = new Date();
         Date memberShipEnd = new Date();
@@ -138,6 +143,7 @@ public class Member extends User {
         for (String part : parts) {
             String[] kv = part.split(":", 2);
             if (kv.length < 2) continue;
+
             switch (kv[0].trim()) {
                 case "userID": userID = kv[1].trim(); break;
                 case "password": password = kv[1].trim(); break;
@@ -150,12 +156,15 @@ public class Member extends User {
                 case "isActive": isActive = Boolean.parseBoolean(kv[1].trim()); break;
                 case "height": height = Float.parseFloat(kv[1].trim()); break;
                 case "weight": weight = Double.parseDouble(kv[1].trim()); break;
+                case "gymID": gymID = kv[1].trim(); break;
             }
         }
 
-        Member m = new Member(userID, password, email, name, role, memberShipType, memberShipStart, memberShipEnd, height, weight);
+        Gym gym = com.gymmanagement.database.Database.getInstance().findGymById(gymID);
+        Member m = new Member(userID, password, email, name, role,gym, memberShipType, memberShipStart, memberShipEnd, height, weight);
         m.setActive(isActive);
         return m;
     }
+
 
 } 

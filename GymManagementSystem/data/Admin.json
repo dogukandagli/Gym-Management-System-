@@ -1,2 +1,1 @@
-{"userID":"A001","password":"admin13","email":"admn@example.com","name":"Doğukan Dağlı","role":"Admin"}
-{"userID":"A001","password":"admin123","email":"admin@example.com","name":"Doğukan Dağlı","role":"Admin"}
+{"userID":"A001","password":"admin123","email":"admin@example.com","name":"Doğukan Dağlı","role":"Admin","isActive":true,"gymID":"GYM01"}

@@ -20,7 +20,7 @@ public class Gym {
         this.monthlyEntries = 0;
     }
 
-    // Getters and Setters
+    // === GETTERS & SETTERS ===
     public String getName() {
         return name;
     }
@@ -35,6 +35,11 @@ public class Gym {
 
     public void setGymID(String gymID) {
         this.gymID = gymID;
+    }
+
+    // getId alias (opsiyonel)
+    public String getId() {
+        return gymID;
     }
 
     public String getLocation() {
@@ -78,4 +83,40 @@ public class Gym {
     public void resetMonthlyEntries() {
         this.monthlyEntries = 0;
     }
-} 
+
+    // === JSON METHODS ===
+
+    public String toJson() {
+        return String.format(
+            "{\"name\":\"%s\",\"gymID\":\"%s\",\"location\":\"%s\",\"category\":\"%s\",\"monthlyEntries\":%d}",
+            name, gymID, location, category, monthlyEntries
+        );
+    }
+
+    public static Gym fromJson(String json) {
+        String[] parts = json.replace("{", "")
+                             .replace("}", "")
+                             .replace("\"", "")
+                             .split(",");
+
+        String name = "", gymID = "", location = "", category = "";
+        int monthlyEntries = 0;
+
+        for (String part : parts) {
+            String[] kv = part.split(":", 2);
+            if (kv.length < 2) continue;
+
+            switch (kv[0].trim()) {
+                case "name": name = kv[1].trim(); break;
+                case "gymID": gymID = kv[1].trim(); break;
+                case "location": location = kv[1].trim(); break;
+                case "category": category = kv[1].trim(); break;
+                case "monthlyEntries": monthlyEntries = Integer.parseInt(kv[1].trim()); break;
+            }
+        }
+
+        Gym g = new Gym(name, gymID, location, category);
+        g.monthlyEntries = monthlyEntries;
+        return g;
+    }
+}

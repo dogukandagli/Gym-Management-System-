@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gymmanagement.database.Database;
+
 public class Coach extends User {
     private int experienceYears;
     private List<String> certifications;
@@ -12,9 +14,9 @@ public class Coach extends User {
     private List<LocalDateTime> availableHours;
     private List<ClassSession> assignedClasses;
 
-    public Coach(String userID, String password, String email, String name, String role,
+    public Coach(String userID, String password, String email, String name, String role, Gym gym,
                  int experienceYears, String bio) {
-        super(userID, password, role, email, name);
+        super(userID, password, email, name,role,gym);
         this.experienceYears = experienceYears;
         this.bio = bio;
         this.certifications = new ArrayList<>();
@@ -99,10 +101,11 @@ public class Coach extends User {
         hours.append("]");
 
         return String.format(
-            "{\"userID\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"name\":\"%s\",\"role\":\"%s\",\"experienceYears\":%d,\"certifications\":%s,\"bio\":\"%s\",\"availableHours\":%s}",
-            getUserID(), getPassword(), getEmail(), getName(), getRole(),
-            experienceYears, certs.toString(), bio, hours.toString()
-        );
+        	    "{\"userID\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"name\":\"%s\",\"role\":\"%s\",\"gymID\":\"%s\",\"experienceYears\":%d,\"certifications\":%s,\"bio\":\"%s\",\"availableHours\":%s}",
+        	    getUserID(), getPassword(), getEmail(), getName(), getRole(),
+        	    getGym() != null ? getGym().getGymID() : "", // veya getName()
+        	    experienceYears, certs.toString(), bio, hours.toString()
+        	);
     }
 
     public static Coach fromJson(String json) {
@@ -111,7 +114,7 @@ public class Coach extends User {
                              .replace("\"", "")
                              .split(",");
 
-        String userID = "", password = "", email = "", name = "", bio = "", role = "Coach";
+        String userID = "", password = "", email = "", name = "", bio = "", role = "Coach" ,gymID = "";
         int experienceYears = 0;
         List<String> certifications = new ArrayList<>();
         List<LocalDateTime> availableHours = new ArrayList<>();
@@ -126,6 +129,7 @@ public class Coach extends User {
                 case "email": email = kv[1].trim(); break;
                 case "name": name = kv[1].trim(); break;
                 case "role": role = kv[1].trim(); break;
+                case "gymID": gymID = kv[1].trim(); break;
                 case "experienceYears": experienceYears = Integer.parseInt(kv[1].trim()); break;
                 case "bio": bio = kv[1].trim(); break;
                 case "certifications":
@@ -151,7 +155,9 @@ public class Coach extends User {
             }
         }
 
-        Coach c = new Coach(userID, password, email, name, role, experienceYears, bio);
+        Gym gym = Database.getInstance().findGymById(gymID);
+        
+        Coach c = new Coach(userID, password, email, name, role,gym, experienceYears, bio);
         c.setRole(role);
         for (String cert : certifications) c.addCertification(cert);
         for (LocalDateTime hour : availableHours) c.addAvailableHour(hour);
