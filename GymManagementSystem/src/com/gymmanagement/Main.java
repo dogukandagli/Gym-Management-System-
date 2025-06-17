@@ -52,32 +52,9 @@ public class Main {
         ScreenUtil.clearScreen();
         System.out.println("\nGiriş işlemi başlatılıyor...");
         
-        System.out.println("\n=== Kullanıcı Tipi Seçimi ===");
-        System.out.println("1. Admin Girişi");
-        System.out.println("2. Üye Girişi");
-        System.out.println("3. Eğitmen Girişi");
-        System.out.println("4. Geri Dön");
-        System.out.print("Seçiminizi girin: ");
-        
-        String userType = scanner.nextLine();
         String role = "";
         
-        switch (userType) {
-            case "1":
-                role = "Admin";
-                break;
-            case "2":
-                role = "Member";
-                break;
-            case "3":
-                role = "Coach";
-                break;
-            case "4":
-                return;
-            default:
-                System.out.println("Geçersiz seçim!");
-                return;
-        }
+    
         
         ScreenUtil.clearScreen();
         System.out.println("\n=== GYM Management Login ===");
@@ -181,10 +158,10 @@ public class Main {
         
         ScreenUtil.clearScreen();
         System.out.print("Boy (cm): ");
-        double height = scanner.nextDouble();
+        int height = scanner.nextInt();
 
         System.out.print("Kilo (kg): ");
-        double weight = scanner.nextDouble();
+        int weight = scanner.nextInt();
 
         Date startDate = new java.util.Date(); 
         Date endDate;

@@ -3,6 +3,7 @@ package com.gymmanagement.user;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.gymmanagement.model.MembershipType;
 import com.gymmanagement.model.*;
@@ -13,39 +14,54 @@ public class Member extends User {
     private Date memberShipStart;
     private Date memberShipEnd;
     private boolean isActive;
-    private double height;
-    private double weight;
+    private int height;
+    private int weight;
     public int ID;
     private boolean isYearly;
+    private List<GymListener> listeners = new ArrayList<>();
+    private List<String> notifications = new ArrayList<>();
 
     public Member(String userID, String password, String email, String name, String role, Gym gym,
                  MembershipType memberShipType, Date memberShipStart, Date memberShipEnd,
-                 double height, double weight) {
+                 int height, int weight) {
         super(userID, password, email, name, role, gym);
         this.memberShipType = memberShipType;
         this.activityHistory = new ArrayList<>();
         this.memberShipStart = memberShipStart;
         this.memberShipEnd = memberShipEnd;
         this.isActive = true;
-        this.height = (float)height;
+        this.height = height;
         this.weight = weight;
         this.isYearly = false; // Varsayılan olarak aylık
     }
 
     public Member(String userID, String password, String email, String name, String role, Gym gym,
                  MembershipType memberShipType, Date memberShipStart, Date memberShipEnd,
-                 double height, double weight, boolean isYearly) {
+                 int height, int weight, boolean isYearly) {
         super(userID, password, email, name, role, gym);
         this.memberShipType = memberShipType;
         this.memberShipStart = memberShipStart;
         this.memberShipEnd = memberShipEnd;
         this.isActive = true;
-        this.height = (float)height;
+        this.height = height;
         this.weight = weight;
         this.isYearly = isYearly;
     }
+    
+    public void addNotification(String notification) {
+        if (notification != null && !notification.isBlank()) {
+            notifications.add(notification);
+        }
+    }
+    public List<String> getNotifications() {
+        return new ArrayList<>(notifications); // dış müdahaleye kapalı kopya döner
+    }
+    public void clearNotifications() {
+        notifications.clear();
+    }
 
-    @Override
+    
+
     public boolean login(String userID, String password) {
         // Check if the member is active and credentials match
         return isActive && 
@@ -61,7 +77,17 @@ public class Member extends User {
     public void setMemberShipType(MembershipType memberShipType) {
         this.memberShipType = memberShipType;
     }
-
+    public void notifyClassAdded(ClassSession session) {
+        for (GymListener listener : listeners) {
+            listener.onClassAdded(session);
+        }
+    }
+    
+   public void addListener(GymListener listener) {
+	   listeners.add(listener);
+   }
+   
+   
 
     public void addActivity(String activity) {
         if (activityHistory == null) {
@@ -101,19 +127,19 @@ public class Member extends User {
         isActive = active;
     }
 
-    public double getHeight() {
+    public int getHeight() {
         return height;
     }
 
-    public void setHeight(float height) {
+    public void setHeight(int height) {
         this.height = height;
     }
 
-    public double getWeight() {
+    public int getWeight() {
         return weight;
     }
 
-    public void setWeight(double weight) {
+    public void setWeight(int weight) {
         this.weight = weight;
     }
     public int getId() {
@@ -165,53 +191,76 @@ public class Member extends User {
 
     // Manual JSON serialization
     public String toJson() {
+        String notifStr = notifications.stream()
+            .map(n -> "\"" + n.replace("\"", "") + "\"")
+            .collect(Collectors.joining(","));
+
         return String.format(
             "{\"userID\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"name\":\"%s\",\"role\":\"%s\"," +
             "\"memberShipType\":\"%s\",\"memberShipStart\":%d,\"memberShipEnd\":%d,\"isActive\":%b," +
-            "\"height\":%.2f,\"weight\":%.2f,\"gymID\":\"%s\",\"isYearly\":%b}",
+            "\"height\":%d,\"weight\":%d,\"gymID\":\"%s\",\"isYearly\":%b,\"notifications\":[%s]}",
             getUserID(), getPassword(), getEmail(), getName(), getRole(),
             memberShipType, memberShipStart.getTime(), memberShipEnd.getTime(), isActive,
             height, weight, getGym() != null ? getGym().getGymID() : "",
-            isYearly
+            isYearly, notifStr
         );
     }
 
+    // --- JSON parsing güncellendi ---
     public static Member fromJson(String json) {
-        String[] parts = json.replace("{", "").replace("}", "").replace("\"", "").split(",");
+        String[] parts = json.replace("{", "").replace("}", "")
+                             .replace("\"", "").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
 
         String userID = "", password = "", email = "", name = "", role = "", gymID = "";
         MembershipType memberShipType = MembershipType.BASIC;
         Date memberShipStart = new Date();
         Date memberShipEnd = new Date();
         boolean isActive = true;
-        float height = 0;
-        double weight = 0;
+        int height = 0;
+        int weight = 0;
         boolean isYearly = false;
+        List<String> notifications = new ArrayList<>();
 
         for (String part : parts) {
             String[] kv = part.split(":", 2);
             if (kv.length < 2) continue;
 
-            switch (kv[0].trim()) {
-                case "userID": userID = kv[1].trim(); break;
-                case "password": password = kv[1].trim(); break;
-                case "email": email = kv[1].trim(); break;
-                case "name": name = kv[1].trim(); break;
-                case "role": role = kv[1].trim(); break;
-                case "memberShipType": memberShipType = MembershipType.valueOf(kv[1].trim()); break;
-                case "memberShipStart": memberShipStart = new Date(Long.parseLong(kv[1].trim())); break;
-                case "memberShipEnd": memberShipEnd = new Date(Long.parseLong(kv[1].trim())); break;
-                case "isActive": isActive = Boolean.parseBoolean(kv[1].trim()); break;
-                case "height": height = Float.parseFloat(kv[1].trim()); break;
-                case "weight": weight = Double.parseDouble(kv[1].trim()); break;
-                case "gymID": gymID = kv[1].trim(); break;
-                case "isYearly": isYearly = Boolean.parseBoolean(kv[1].trim()); break;
+            String key = kv[0].trim();
+            String value = kv[1].trim();
+
+            switch (key) {
+                case "userID": userID = value; break;
+                case "password": password = value; break;
+                case "email": email = value; break;
+                case "name": name = value; break;
+                case "role": role = value; break;
+                case "memberShipType": memberShipType = MembershipType.valueOf(value); break;
+                case "memberShipStart": memberShipStart = new Date(Long.parseLong(value)); break;
+                case "memberShipEnd": memberShipEnd = new Date(Long.parseLong(value)); break;
+                case "isActive": isActive = Boolean.parseBoolean(value); break;
+                case "height": height = Integer.parseInt(value); break;
+                case "weight": weight = Integer.parseInt(value); break;
+                case "gymID": gymID = value; break;
+                case "isYearly": isYearly = Boolean.parseBoolean(value); break;
+                case "notifications":
+                    // JSON dizisinden temizlenmiş liste: ["text1","text2"]
+                    value = value.replace("[", "").replace("]", "");
+                    if (!value.isBlank()) {
+                        for (String n : value.split(",")) {
+                            notifications.add(n.trim().replace("\"", ""));
+                        }
+                    }
+                    break;
             }
         }
 
         Gym gym = com.gymmanagement.database.Database.getInstance().findGymById(gymID);
-        Member m = new Member(userID, password, email, name, role, gym, memberShipType, memberShipStart, memberShipEnd, height, weight, isYearly);
+        Member m = new Member(userID, password, email, name, role, gym,
+                memberShipType, memberShipStart, memberShipEnd, height, weight, isYearly);
         m.setActive(isActive);
+        for (String note : notifications) {
+            m.addNotification(note);
+        }
         return m;
     }
 } 

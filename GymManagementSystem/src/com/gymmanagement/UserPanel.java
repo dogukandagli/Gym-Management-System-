@@ -7,12 +7,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-import org.w3c.dom.ls.LSOutput;
-
 import com.gymmanagement.database.Database;
 import com.gymmanagement.model.ClassSession;
 import com.gymmanagement.model.Gym;
-import com.gymmanagement.user.*;
+import com.gymmanagement.user.BasicExercise;
+import com.gymmanagement.user.BasicTraining;
+import com.gymmanagement.user.CardioDecorator;
+import com.gymmanagement.user.Member;
+import com.gymmanagement.user.StretchingDecorator;
+import com.gymmanagement.user.TrainingProgram;
 import com.gymmanagement.util.ScreenUtil;
 
 public class UserPanel 
@@ -27,6 +30,18 @@ public class UserPanel
 		
 		do 
 		{
+			  List<String> notifications = user.getNotifications();
+		        if (!notifications.isEmpty()) {
+		            System.out.println("\n🔔 [BİLDİRİMLERİNİZ]");
+		            for (String note : notifications) {
+		                System.out.println(" - " + note);
+		            }
+		            user.clearNotifications();
+		            com.gymmanagement.database.Database.getInstance().updateMember(user);
+		            System.out.println("\n(Tüm bildirimler okundu olarak işaretlendi.)\n");
+		        }
+			System.out.println();
+			
 			ScreenUtil.clearScreen();
 			System.out.println("=== User Panel ===");
 			System.out.println("1. View and Update My Information");
@@ -86,7 +101,7 @@ public class UserPanel
 							case 2:
 								ScreenUtil.clearScreen();
 								System.out.print("Enter height: ");
-								float newHeight = scanner.nextFloat();
+								int newHeight = scanner.nextInt();
 								user.setHeight(newHeight);
 								Database.getInstance().updateMember((Member) user);
 								System.out.println("Height has been updated.");
@@ -97,7 +112,7 @@ public class UserPanel
 							case 3:
 								ScreenUtil.clearScreen();
 								System.out.print("Enter Weight: ");
-								float newWeight = scanner.nextFloat();
+								int newWeight = scanner.nextInt();
 								user.setWeight(newWeight);
 								Database.getInstance().updateMember((Member) user);
 								System.out.println("Weight has been updated.");

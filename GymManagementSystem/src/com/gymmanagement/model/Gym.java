@@ -12,6 +12,7 @@ public class Gym {
     private MembershipType category;
     private List<Coach> assignedCoaches;
     private int monthlyEntries;
+    private List<GymListener> listeners = new ArrayList<>();
 
     public Gym(String name, String gymID, String location, MembershipType category) {
         this.name = name;
@@ -20,6 +21,18 @@ public class Gym {
         this.category = category;
         this.assignedCoaches = new ArrayList<>();
         this.monthlyEntries = 0;
+    }
+
+    public void addListener(GymListener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    public void notifyClassAdded(ClassSession session) {
+        for (GymListener listener : listeners) {
+            listener.onClassAdded(session);
+        }
     }
 
     // === GETTERS & SETTERS ===

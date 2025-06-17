@@ -97,11 +97,19 @@ public class AdminPanel {
                         coachID = scanner.nextLine();
                     }
                     
+                    List<Member> allMembers = Database.getInstance().loadMembers();
+                    selectedGym.addListener(new GymMemberNotifier(allMembers));
+                    
+                    
                     Coach coach = Database.getInstance().findCoachById(coachID);
                     Date oldDate = new Date();
                     LocalDateTime startDate = LocalDateTime.now();
                     
-                    ClassSession classes = new ClassSession(name, description, startDate, capacity, coach, selectedGym);
+                    
+                    ClassSession classes = new ClassSession( name ,  description , startDate ,capacity,coach,selectedGym );
+                    
+                    selectedGym.notifyClassAdded(classes);
+                    
                     coach.addClasses(classes);
                     Database.getInstance().addClass(classes);
                     System.out.println("Ders eklendi.");
