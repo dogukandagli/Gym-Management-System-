@@ -143,6 +143,7 @@ public class AdminPanel {
     	        Admin.getInstance().listMembers(); 
     	        break;
     	    case 2:
+    	    	scanner.nextLine();
     	    	System.out.print("Lütfen görüntülemek istediğiniz salonun Gym ID'sini girin: ");
     	    	 String selectedGymID = scanner.nextLine();
     	    	 Admin.getInstance().listMembersByGymID(selectedGymID); 

@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-import org.w3c.dom.ls.LSOutput;
 
 import com.gymmanagement.database.Database;
 import com.gymmanagement.model.ClassSession;
@@ -236,7 +235,7 @@ public class UserPanel
 	        		
 	        			break;
 	        	case 5:
-
+	        		
 	        		System.out.println();
 	        	case 6:
 	        		
