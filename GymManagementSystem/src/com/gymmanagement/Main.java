@@ -14,9 +14,9 @@ import com.gymmanagement.database.Database;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        boolean flag = true;
-        
+    	   Scanner scanner = new Scanner(System.in);
+    	   boolean flag = true;
+    	
         while (flag) {
             System.out.println("\n==== Gym Management System ====");
             System.out.println("1. Giriş Yap");
@@ -103,64 +103,92 @@ public class Main {
     }
     
     private static void addMember() {
-	    Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
 
-	    System.out.print("Kullanıcı ID: ");
-	    String userID = scanner.nextLine();
-	    System.out.print("Şifre: ");
-	    String password = scanner.nextLine();
+        String userID = Database.getInstance().getNextUserID();
+        System.out.println("Kullanıcı ID: " + userID + " (Otomatik atandı)");
+        
+        System.out.print("Şifre: ");
+        String password = scanner.nextLine();
 
-	    System.out.print("Email: ");
-	    String email = scanner.nextLine();
+        System.out.print("Email: ");
+        String email = scanner.nextLine();
 
-	    System.out.print("Ad Soyad: ");
-	    String name = scanner.nextLine();
+        System.out.print("Ad Soyad: ");
+        String name = scanner.nextLine();
 
-	    String role = "Member"; 
+        String role = "Member"; 
 
-	    System.out.print("Üyelik tipi seçin (BASIC, PREMIUM, STUDENT): ");
-	    MembershipType membershipType = null;
-	    while (membershipType == null) {
-	        try {
-	            String typeInput = scanner.nextLine().toUpperCase();
-	            membershipType = MembershipType.valueOf(typeInput);
-	        } catch (IllegalArgumentException e) {
-	            System.out.print("❌ Geçersiz giriş. Tekrar girin (BASIC, PREMIUM, STUDENT): ");
-	        }
-	    }
-	    
-	    System.out.println("\n Seçtiğiniz üyelik tipine uygun spor salonları:");
-	    List<Gym> Gyms = Database.getInstance().loadGyms();
-	    for (Gym gym : Gyms) {
-	        if (membershipType.ordinal() >= gym.getCategory().ordinal()) {
-	            System.out.println("➡ Gym ID: " + gym.getGymID() + ", Lokasyon: " + gym.getLocation() + " (Gerekli: " + gym.getCategory() + ")");
-	        }
-	    }
+        System.out.print("Üyelik tipi seçin (BASIC, PREMIUM, STUDENT): ");
+        MembershipType membershipType = null;
+        while (membershipType == null) {
+            try {
+                String typeInput = scanner.nextLine().toUpperCase();
+                membershipType = MembershipType.valueOf(typeInput);
+            } catch (IllegalArgumentException e) {
+                System.out.print("❌ Geçersiz giriş. Tekrar girin (BASIC, PREMIUM, STUDENT): ");
+            }
+        }
 
-	    Gym selectedGym = null;
-	    while (selectedGym == null) {
-	        System.out.print("\nLütfen kayıt olmak istediğiniz Gym ID'sini girin: ");
-	        String selectedID = scanner.nextLine();
+        System.out.println("\nÜyelik Süresi Seçin:");
+        System.out.println("1. Aylık Üyelik (" + membershipType.getMonthlyPrice() + " TL)");
+        System.out.println("2. Yıllık Üyelik (" + membershipType.getYearlyPrice() + " TL)");
+        System.out.print("Seçiminiz (1/2): ");
+        
+        boolean isYearly = false;
+        while (true) {
+            String choice = scanner.nextLine();
+            if (choice.equals("1")) {
+                isYearly = false;
+                break;
+            } else if (choice.equals("2")) {
+                isYearly = true;
+                break;
+            } else {
+                System.out.print("Geçersiz seçim! Lütfen 1 veya 2 girin: ");
+            }
+        }
+        
+        System.out.println("\nSeçtiğiniz üyelik tipine uygun spor salonları:");
+        List<Gym> Gyms = Database.getInstance().loadGyms();
+        for (Gym gym : Gyms) {
+            if (membershipType.ordinal() >= gym.getCategory().ordinal()) {
+                System.out.println("➡ Gym ID: " + gym.getGymID() + ", Lokasyon: " + gym.getLocation() + " (Gerekli: " + gym.getCategory() + ")");
+            }
+        }
 
-	        selectedGym = Database.getInstance().findGymById(selectedID);
-	        if (selectedGym == null) {
-	            System.out.println("❌ Geçersiz Gym ID. Lütfen uygun ID'lerden birini seçin.");
-	        } else {
-        	    System.out.println("✅ Seçilen Gym: " + selectedGym.getLocation());
-        	}
-	    }
-	    
-	    System.out.print("Boy (cm): ");
-	    double height = scanner.nextDouble();
+        Gym selectedGym = null;
+        while (selectedGym == null) {
+            System.out.print("\nLütfen kayıt olmak istediğiniz Gym ID'sini girin: ");
+            String selectedID = scanner.nextLine();
 
-	    System.out.print("Kilo (kg): ");
-	    double weight = scanner.nextDouble();
+            selectedGym = Database.getInstance().findGymById(selectedID);
+            if (selectedGym == null) {
+                System.out.println("❌ Geçersiz Gym ID. Lütfen uygun ID'lerden birini seçin.");
+            } else {
+                System.out.println("✅ Seçilen Gym: " + selectedGym.getLocation());
+            }
+        }
+        
+        System.out.print("Boy (cm): ");
+        double height = scanner.nextDouble();
 
-	    Date startDate = new java.util.Date(); 
-	    Date endDate = new java.util.Date(System.currentTimeMillis() + (365L * 24 * 60 * 60 * 1000)); 
+        System.out.print("Kilo (kg): ");
+        double weight = scanner.nextDouble();
 
-	    Member newMember = new Member(userID,password,email,name,role,selectedGym,membershipType,startDate,endDate,height,weight);
-	    newMember.setActive(false);
-	    Admin.getInstance().pasifMember(newMember);
-	}
+        Date startDate = new java.util.Date(); 
+        Date endDate;
+        if (isYearly) {
+            endDate = new Date(System.currentTimeMillis() + (365L * 24 * 60 * 60 * 1000));
+        } else {
+            endDate = new Date(System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000));
+        }
+
+        Member newMember = new Member(userID, password, email, name, role, selectedGym, membershipType, startDate, endDate, height, weight, isYearly);
+        newMember.setActive(false);
+        Admin.getInstance().pasifMember(newMember);
+        
+        System.out.println("\n✅ Üyelik başarıyla oluşturuldu!");
+        System.out.printf("Toplam Ücret: %.2f TL\n", newMember.getMembershipPrice());
+    }
 } 

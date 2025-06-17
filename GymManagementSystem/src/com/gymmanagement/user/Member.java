@@ -14,17 +14,32 @@ public class Member extends User {
     private double height;
     private double weight;
     public int ID;
+    private boolean isYearly;
 
-    public Member(String userID, String password, String email, String name,String role,Gym gym,
-    		MembershipType memberShipType, Date memberShipStart, Date memberShipEnd,
+    public Member(String userID, String password, String email, String name, String role, Gym gym,
+                 MembershipType memberShipType, Date memberShipStart, Date memberShipEnd,
                  double height, double weight) {
-        super(userID, password, email, name,role,gym);
+        super(userID, password, email, name, role, gym);
         this.memberShipType = memberShipType;
         this.memberShipStart = memberShipStart;
         this.memberShipEnd = memberShipEnd;
-        this.isActive = true; // New members are active by default
-        this.height = height;
+        this.isActive = true;
+        this.height = (float)height;
         this.weight = weight;
+        this.isYearly = false; // Varsayılan olarak aylık
+    }
+
+    public Member(String userID, String password, String email, String name, String role, Gym gym,
+                 MembershipType memberShipType, Date memberShipStart, Date memberShipEnd,
+                 double height, double weight, boolean isYearly) {
+        super(userID, password, email, name, role, gym);
+        this.memberShipType = memberShipType;
+        this.memberShipStart = memberShipStart;
+        this.memberShipEnd = memberShipEnd;
+        this.isActive = true;
+        this.height = (float)height;
+        this.weight = weight;
+        this.isYearly = isYearly;
     }
 
     @Override
@@ -87,6 +102,18 @@ public class Member extends User {
         return ID;
     }
 
+    public double getMembershipPrice() {
+        return isYearly ? memberShipType.getYearlyPrice() : memberShipType.getMonthlyPrice();
+    }
+
+    public boolean isYearly() {
+        return isYearly;
+    }
+
+    public void setYearly(boolean yearly) {
+        isYearly = yearly;
+    }
+
     // Member-specific methods
     public List<MembershipType> findMemberShipPlans() {
         // find available membership plans logic will be implemented here
@@ -121,16 +148,15 @@ public class Member extends User {
     // Manual JSON serialization
     public String toJson() {
         return String.format(
-            "{\"userID\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"name\":\"%s\",\"role\":\"%s\",\"memberShipType\":\"%s\",\"memberShipStart\":%d,\"memberShipEnd\":%d,\"isActive\":%b,\"height\":%f,\"weight\":%f,\"gymID\":\"%s\"}",
+            "{\"userID\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"name\":\"%s\",\"role\":\"%s\"," +
+            "\"memberShipType\":\"%s\",\"memberShipStart\":%d,\"memberShipEnd\":%d,\"isActive\":%b," +
+            "\"height\":%.2f,\"weight\":%.2f,\"gymID\":\"%s\",\"isYearly\":%b}",
             getUserID(), getPassword(), getEmail(), getName(), getRole(),
-            memberShipType.name(),
-            memberShipStart.getTime(),
-            memberShipEnd.getTime(),
-            isActive, height, weight,
-            getGym() != null ? getGym().getGymID() : ""
+            memberShipType, memberShipStart.getTime(), memberShipEnd.getTime(), isActive,
+            height, weight, getGym() != null ? getGym().getGymID() : "",
+            isYearly
         );
     }
-
 
     public static Member fromJson(String json) {
         String[] parts = json.replace("{", "").replace("}", "").replace("\"", "").split(",");
@@ -142,6 +168,7 @@ public class Member extends User {
         boolean isActive = true;
         float height = 0;
         double weight = 0;
+        boolean isYearly = false;
 
         for (String part : parts) {
             String[] kv = part.split(":", 2);
@@ -160,14 +187,13 @@ public class Member extends User {
                 case "height": height = Float.parseFloat(kv[1].trim()); break;
                 case "weight": weight = Double.parseDouble(kv[1].trim()); break;
                 case "gymID": gymID = kv[1].trim(); break;
+                case "isYearly": isYearly = Boolean.parseBoolean(kv[1].trim()); break;
             }
         }
 
         Gym gym = com.gymmanagement.database.Database.getInstance().findGymById(gymID);
-        Member m = new Member(userID, password, email, name, role,gym, memberShipType, memberShipStart, memberShipEnd, height, weight);
+        Member m = new Member(userID, password, email, name, role, gym, memberShipType, memberShipStart, memberShipEnd, height, weight, isYearly);
         m.setActive(isActive);
         return m;
     }
-
-
 } 

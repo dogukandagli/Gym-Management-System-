@@ -1,6 +1,5 @@
 package com.gymmanagement.model;
 
-import com.sun.net.httpserver.Request;
 
 public abstract class BaseHandler implements Handler {
     private Handler next;

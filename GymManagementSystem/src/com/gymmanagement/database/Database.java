@@ -282,4 +282,40 @@ public class Database {
         }
         saveCoaches(coach);
     }
+
+    public String getNextUserID() {
+        int maxID = 0;
+        
+        // Member ID'lerini kontrol et
+        for (Member m : loadMembers()) {
+            try {
+                int id = Integer.parseInt(m.getUserID());
+                maxID = Math.max(maxID, id);
+            } catch (NumberFormatException e) {
+                continue;
+            }
+        }
+        
+        // Admin ID'lerini kontrol et
+        for (Admin a : loadAdmins()) {
+            try {
+                int id = Integer.parseInt(a.getUserID());
+                maxID = Math.max(maxID, id);
+            } catch (NumberFormatException e) {
+                continue;
+            }
+        }
+        
+        // Coach ID'lerini kontrol et
+        for (Coach c : loadCoaches()) {
+            try {
+                int id = Integer.parseInt(c.getUserID());
+                maxID = Math.max(maxID, id);
+            } catch (NumberFormatException e) {
+                continue;
+            }
+        }
+        
+        return String.valueOf(maxID + 1);
+    }
 }

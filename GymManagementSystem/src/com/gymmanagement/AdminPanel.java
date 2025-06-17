@@ -31,9 +31,11 @@ public class AdminPanel {
             System.out.println("4. Tüm Üyeleri Listele");
             System.out.println("5. Aktif Tüm Üyeleri Listele");
             System.out.println("6. Spor Salonu Ekle");
-            System.out.println("7. Çıkış");
+            System.out.println("7. Mali Tablo Görüntüle");
+            System.out.println("8. Çıkış");
             System.out.print("Seçiminiz: ");
             choice = scanner.nextInt();
+            scanner.nextLine(); // Buffer temizleme
 
             switch (choice) {
                 case 1:
@@ -118,13 +120,16 @@ public class AdminPanel {
                 case 6:
                 	addNewGym();
                     break;
-                case 7: 
+                case 7:
+                    showFinancialReport();
+                    break;
+                case 8: 
                 	System.out.println("Admin çıkış yapıyor...");
                     break;
                 default:
                     System.out.println("Geçersiz seçim!");
             }
-        } while (choice != 6);
+        } while (choice != 8);
 	}
 	public static void listMembers() {
 		Scanner scanner = new Scanner(System.in);
@@ -175,56 +180,55 @@ public class AdminPanel {
 	}
 
 	public static void addCoach(Admin admin) {
-		   Scanner scanner = new Scanner(System.in);
-		   
-		   System.out.println("Eklenmek istenen gym ID'yi giriniz.");
-		   System.out.println("📋 Gym'leri listelemek için '1' yazın, doğrudan gym ID girmek için ID'yi yazın:");
-		   System.out.print("Seçiminiz: ");
-		   String input = scanner.nextLine().trim();
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.println("Eklenmek istenen gym ID'yi giriniz.");
+        System.out.println("📋 Gym'leri listelemek için '1' yazın, doğrudan gym ID girmek için ID'yi yazın:");
+        System.out.print("Seçiminiz: ");
+        String input = scanner.nextLine().trim();
 
-		   if (input.equals("1")) {
-		       System.out.println("🔽 Mevcut Gym Listesi:");
-		       for (Gym gym : Database.getInstance().loadGyms()) {
-		           System.out.println("➡ Gym ID: " + gym.getGymID() + " | Lokasyon: " + gym.getLocation() + " | Kategori: " + gym.getCategory());
-		       }
+        if (input.equals("1")) {
+            System.out.println("🔽 Mevcut Gym Listesi:");
+            for (Gym gym : Database.getInstance().loadGyms()) {
+                System.out.println("➡ Gym ID: " + gym.getGymID() + " | Lokasyon: " + gym.getLocation() + " | Kategori: " + gym.getCategory());
+            }
 
-		       System.out.print("📥 Şimdi eklenmek istenen gym ID'yi girin: ");
-		       input = scanner.nextLine().trim();
-		   }
-		   Gym gym = Database.getInstance().findGymById(input);
-		   
-		   if (gym == null) {
-			    System.out.println("❌ Geçersiz Gym ID. İşlem iptal edildi.");
-			    return;
-			} else {
-			    System.out.println("✅ Seçilen Gym: " + gym.getLocation());
-			}
-		   
-		  System.out.print("Kullanıcı ID: ");
-          String userID = scanner.nextLine();
+            System.out.print("📥 Şimdi eklenmek istenen gym ID'yi girin: ");
+            input = scanner.nextLine().trim();
+        }
+        Gym gym = Database.getInstance().findGymById(input);
+        
+        if (gym == null) {
+            System.out.println("❌ Geçersiz Gym ID. İşlem iptal edildi.");
+            return;
+        } else {
+            System.out.println("✅ Seçilen Gym: " + gym.getLocation());
+        }
+        
+        String userID = Database.getInstance().getNextUserID();
+        System.out.println("Kullanıcı ID: " + userID + " (Otomatik atandı)");
 
-          System.out.print("Şifre: ");
-          String password = scanner.nextLine();
+        System.out.print("Şifre: ");
+        String password = scanner.nextLine();
 
-          System.out.print("Email: ");
-          String email = scanner.nextLine();
+        System.out.print("Email: ");
+        String email = scanner.nextLine();
 
-          System.out.print("İsim: ");
-          String name1 = scanner.nextLine();
+        System.out.print("İsim: ");
+        String name1 = scanner.nextLine();
 
-          String role = "Coach"; 
+        String role = "Coach"; 
 
-          System.out.print("Deneyim yılı: ");
-          int experienceYears = scanner.nextInt();
-          scanner.nextLine(); 
+        System.out.print("Deneyim yılı: ");
+        int experienceYears = scanner.nextInt();
+        scanner.nextLine(); 
 
-          System.out.print("Hakkında kısa bilgi (bio): ");
-          String bio = scanner.nextLine();
-          
-
-          Coach newCoach = new Coach(userID, password, email, name1, role,gym, experienceYears, bio);
-          admin.addCoach(newCoach);
-	}
+        System.out.print("Hakkında kısa bilgi (bio): ");
+        String bio = scanner.nextLine();
+        
+        Coach newCoach = new Coach(userID, password, email, name1, role, gym, experienceYears, bio);
+        admin.addCoach(newCoach);
+    }
 	public static void addNewGym() {
 	    Scanner scanner = new Scanner(System.in);
 
@@ -256,5 +260,40 @@ public class AdminPanel {
 	    System.out.println("✅ Yeni spor salonu eklendi: " + name + " (" + location + ")");
 	}
 
-	
+	private static void showFinancialReport() {
+        List<Member> members = Database.getInstance().loadMembers();
+        double totalMonthlyIncome = 0;
+        double totalYearlyIncome = 0;
+        
+        System.out.println("\n=== Mali Tablo ===");
+        System.out.println("Üyelik Tipi | Aylık Üye Sayısı | Yıllık Üye Sayısı | Toplam Gelir");
+        System.out.println("------------------------------------------------------------");
+        
+        for (MembershipType type : MembershipType.values()) {
+            long monthlyMembers = members.stream()
+                .filter(m -> m.getMemberShipType() == type && !m.isYearly())
+                .count();
+            
+            long yearlyMembers = members.stream()
+                .filter(m -> m.getMemberShipType() == type && m.isYearly())
+                .count();
+            
+            double monthlyIncome = monthlyMembers * type.getMonthlyPrice();
+            double yearlyIncome = yearlyMembers * type.getYearlyPrice();
+            
+            totalMonthlyIncome += monthlyIncome;
+            totalYearlyIncome += yearlyIncome;
+            
+            System.out.printf("%-10s | %-15d | %-15d | %.2f TL\n",
+                type,
+                monthlyMembers,
+                yearlyMembers,
+                monthlyIncome + yearlyIncome);
+        }
+        
+        System.out.println("------------------------------------------------------------");
+        System.out.printf("Toplam Aylık Gelir: %.2f TL\n", totalMonthlyIncome);
+        System.out.printf("Toplam Yıllık Gelir: %.2f TL\n", totalYearlyIncome);
+        System.out.printf("Toplam Gelir: %.2f TL\n", totalMonthlyIncome + totalYearlyIncome);
+    }
 }
