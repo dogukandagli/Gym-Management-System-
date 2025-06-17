@@ -12,7 +12,7 @@ import com.gymmanagement.database.Database;
 
 public class Main {
     public static void main(String[] args) {
-    	Scanner scanner = new Scanner(System.in);
+    	   Scanner scanner = new Scanner(System.in);
     	   boolean flag = true;
     	
     	
@@ -51,6 +51,7 @@ public class Main {
          			}
          			if(request.loggedInUser instanceof Member) {
          				System.out.println("/n Giris Basarili , Member olarak giris yapiyorsunuz...");
+         				UserPanel.UserPanelShow((Member) request.loggedInUser);
          			}
          		}
                     break;
