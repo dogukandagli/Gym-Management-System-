@@ -2,7 +2,6 @@ package com.gymmanagement;
 
 import com.gymmanagement.user.Coach;
 import com.gymmanagement.model.ClassSession;
-import com.gymmanagement.util.ScreenUtil;
 import java.util.List;
 import java.util.Scanner;
 
@@ -12,7 +11,6 @@ public class CoachPanel {
         boolean running = true;
 
         while (running) {
-            ScreenUtil.clearScreen();
             System.out.println("\n=== Eğitmen Paneli ===");
             System.out.println("1. Derslerimi Görüntüle");
             System.out.println("2. Müsait Saatlerimi Ayarla");
@@ -25,19 +23,15 @@ public class CoachPanel {
 
             switch (choice) {
                 case "1":
-                    ScreenUtil.clearScreen();
                     viewMyClasses(coach);
                     break;
                 case "2":
-                    ScreenUtil.clearScreen();
                     manageAvailableHours(coach);
                     break;
                 case "3":
-                    ScreenUtil.clearScreen();
                     viewCertifications(coach);
                     break;
                 case "4":
-                    ScreenUtil.clearScreen();
                     updateProfile(coach);
                     break;
                 case "5":
@@ -62,6 +56,7 @@ public class CoachPanel {
                 System.out.println("Açıklama: " + session.getDescription());
                 System.out.println("Tarih: " + session.getDateTime());
                 System.out.println("Kapasite: " + session.getCapacity());
+                System.out.println("Katılımcı Sayısı: " + session.getMembers().size());
                 System.out.println("------------------------");
             }
         }
@@ -88,7 +83,7 @@ public class CoachPanel {
         } else {
             System.out.println("\n=== Sertifikalarım ===");
             for (String cert : certifications) {
-                System.out.println(cert);
+                System.out.println("- " + cert);
             }
         }
     }
