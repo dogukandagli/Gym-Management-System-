@@ -1,5 +1,6 @@
 package com.gymmanagement.user;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import com.gymmanagement.model.*;
 
 public class Member extends User {
     private MembershipType memberShipType;
+    private List<String> activityHistory;
     private Date memberShipStart;
     private Date memberShipEnd;
     private boolean isActive;
@@ -21,6 +23,7 @@ public class Member extends User {
                  double height, double weight) {
         super(userID, password, email, name, role, gym);
         this.memberShipType = memberShipType;
+        this.activityHistory = new ArrayList<>();
         this.memberShipStart = memberShipStart;
         this.memberShipEnd = memberShipEnd;
         this.isActive = true;
@@ -59,6 +62,21 @@ public class Member extends User {
         this.memberShipType = memberShipType;
     }
 
+
+    public void addActivity(String activity) {
+        if (activityHistory == null) {
+            activityHistory = new ArrayList<>();
+        }
+        activityHistory.add(activity);
+    }
+
+    public List<String> getActivityHistory() {
+        if (activityHistory == null) {
+            activityHistory = new ArrayList<>();
+        }
+        return activityHistory;
+    }
+    
     public Date getMemberShipStart() {
         return memberShipStart;
     }

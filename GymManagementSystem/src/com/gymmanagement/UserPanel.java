@@ -1,8 +1,13 @@
 package com.gymmanagement;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 import com.gymmanagement.database.Database;
+import com.gymmanagement.model.Gym;
 import com.gymmanagement.user.*;
 
 
@@ -104,15 +109,15 @@ public class UserPanel
 		        				break;
 		        			case 4:
 		        				System.out.println("Exiting Update Panel.");
+		        				System.out.println();
 		        				break;
 		        			default:
 		        				System.out.println("Invaild Command!");
 		        		}
 	        		}while(updateChoice != 4);
-	        	
-
-
 	        		
+	        		break;
+	        	
 	        	case 2:
 	        		
 	        		System.out.println("  Membership and GYM Information ");
@@ -135,31 +140,102 @@ public class UserPanel
 	        		{
 	        			System.out.println("You are not registered to any gym.");
 	        		}
+	        		
 	        		break;
 	        		
 	        		
 	        	case 3:
+	        		
+	        		int i = 1;
+	        		List<Gym> gyms = Database.getInstance().loadGyms();
+	        		for(Gym gym: gyms) 
+	        		{
+	        			System.out.println(i + ". " + gym.getName() + ", " + gym.getLocation() + ", Category: " + gym.getCategory());
+	        			i++;
+	        		}
+	        		
 	        		System.out.println();
+	        		System.out.print("Enter the number of the gym to check in: " );
+	        		
+	        	    int selectedIndex = scanner.nextInt();
+	        	    scanner.nextLine(); 
+
+	        	    if (selectedIndex < 1 || selectedIndex > gyms.size()) {
+	        	        System.out.println("Invalid selection.");
+	        	        break;
+	        	    }
+
+	        	    Gym selectedGym = gyms.get(selectedIndex - 1);
+	        	    if(!selectedGym.getCategory().equals(user.getMemberShipType())) 
+	        	    {
+	        	    	System.out.println("Your membership type is not compatible with this gym category (" + selectedGym.getCategory() + ").");
+	        	    	break;
+	        	    }
+	        	    System.out.print("Enter check-in date and time (yyyy-MM-dd HH:mm): ");
+	        	    String dateTimeInput = scanner.nextLine();
+
+	        	    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	        	    try 
+	        	    {
+	        	        Date checkInDate = formatter.parse(dateTimeInput);
+
+	        	        user.setGym(selectedGym); 
+	        	        System.out.println("Checked into: " + selectedGym.getName() + " at " + checkInDate);
+	        	        
+	        	        // adding to activity will be implemented
+
+	        	    } 
+	        	    catch (ParseException e) 
+	        	    {
+	        	        System.out.println("Invalid date format. Please use yyyy-MM-dd HH:mm");
+	        	    }
+	        		System.out.println();
+	        		
+	        		trainingProgram(user);
+	        		
+	        		
+	        		
+	        		break;
 	        	case 4:
-	        		trainingProgram();
+	        		trainingProgram(user);
+	        		
 	        			break;
 	        	case 5:
-	        	
+
+	        		System.out.println();
 	        	case 6:
 	        		
+	        	    List<String> activities = user.getActivityHistory();  
+	        	    
+	        	    if (activities == null || activities.isEmpty()) {
+	        	    	
+	        	        System.out.println("No activity history found.");
+	        	    } 
+	        	    else 
+	        	    {
+	        	        System.out.println("=== Activity History ===");
+	        	        
+	        	        for (String act : activities) 
+	        	        {
+	        	            System.out.println(act);
+	        	        }
+	        	    }
+	        	    System.out.println();
+	        	    break;
 	        	case 7:
 	            	System.out.println("Exiting...");
 	                break;
 	        	default:
 	        		System.out.println("Invalid command!");
+	        		break;
 	        }
 		}while(choice != 7);
 	}
 	
-	public static void trainingProgram() {
+	public static void trainingProgram(Member user) {
 		Scanner scanner = new Scanner(System.in);
 		TrainingProgram program = new BasicTraining();
-
+		
 		boolean devam = true;
 
 		while (devam) {
@@ -221,6 +297,20 @@ public class UserPanel
 		        System.out.println("Açıklama: " + program.getDescription());
 		        System.out.println("Toplam Süre: " + program.getDuration() + " dk");
 		        System.out.println("Yakilan Kalori" + program.getCalori() + " cl");
+		        
+                if (user != null) 
+                {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    String activity = "Check-in: " + sdf.format(new Date())
+                                    + " | Duration: " + program.getDuration() + " dk"
+                                    + " | Calories: " + program.getCalori() + " cal"
+                                    + " | Exercises: " + program.getDescription();
+                    user.addActivity(activity);
+                    System.out.println("Activity eklendi ✔");
+                    
+                    // adding to database will be implemented
+                }
+
 		        break;
 		    default:
 		        System.out.println("Geçersiz seçim, lütfen tekrar deneyin.");
