@@ -1,5 +1,7 @@
-package com.gymmanagement.model;
+package com.gymmanagement.user;
 
+import com.gymmanagement.model.Gym;
+import com.gymmanagement.model.*;
 public abstract class User {
     private String userID;
     private String password;

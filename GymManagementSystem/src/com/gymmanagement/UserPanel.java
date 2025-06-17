@@ -1,8 +1,9 @@
-package com.gymmanagement.model;
+package com.gymmanagement;
 
 import java.util.Scanner;
 
 import com.gymmanagement.database.Database;
+import com.gymmanagement.user.*;
 
 
 public class UserPanel 
@@ -140,7 +141,8 @@ public class UserPanel
 	        	case 3:
 	        		System.out.println();
 	        	case 4:
-	        	
+	        		trainingProgram();
+	        			break;
 	        	case 5:
 	        	
 	        	case 6:
@@ -154,7 +156,79 @@ public class UserPanel
 		}while(choice != 7);
 	}
 	
-	
+	public static void trainingProgram() {
+		Scanner scanner = new Scanner(System.in);
+		TrainingProgram program = new BasicTraining();
+
+		boolean devam = true;
+
+		while (devam) {
+		    System.out.println("=== ANTRENMAN LİSTESİ ===");
+		    System.out.println("1. Göğüs - Bench Press (20 dk)");
+		    System.out.println("2. Göğüs - Dumbbell Fly (15 dk)");
+		    System.out.println("3. Sırt - Barbell Row (20 dk)");
+		    System.out.println("4. Sırt - Lat Pulldown (15 dk)");
+		    System.out.println("5. Arka Kol - Triceps Pushdown (15 dk)");
+		    System.out.println("6. Ön Kol - Barbell Curl (15 dk)");
+		    System.out.println("7. Bacak - Squat (25 dk)");
+		    System.out.println("8. Bacak - Leg Press (20 dk)");
+		    System.out.println("9. Omuz - Shoulder Press (20 dk)");
+		    System.out.println("10. Kardiyo - Koşu Bandı (20 dk)");
+		    System.out.println("11. Esneme - Full Body Stretching (10 dk)");
+		    System.out.println("0. Programı Bitir ve Göster");
+		    System.out.print("Seçiminiz: ");
+		    
+		    int secim = scanner.nextInt();
+		    
+		    
+		    switch (secim) {
+		    case 1:
+		            ((BasicTraining) program).addExercise(new BasicExercise("Bench Press", 20));
+		        break;
+		    case 2:
+		         ((BasicTraining) program).addExercise(new BasicExercise("Dumbbell Fly", 15));
+		        break;
+		    case 3:
+		         ((BasicTraining) program).addExercise(new BasicExercise("Barbell Row", 20));
+		        break;
+		    case 4:
+		         ((BasicTraining) program).addExercise(new BasicExercise("Lat Pulldown", 15));
+		        break;
+		    case 5:
+		        ((BasicTraining) program).addExercise(new BasicExercise("Triceps Pushdown", 15));
+		        break;
+		    case 6:
+		        ((BasicTraining) program).addExercise(new BasicExercise("Barbell Curl", 15));
+		        break;
+		    case 7:
+		        ((BasicTraining) program).addExercise(new BasicExercise("Squat", 25));
+		        break;
+		    case 8:
+		         ((BasicTraining) program).addExercise(new BasicExercise("Leg Press", 20));
+		        break;
+		    case 9:
+		         ((BasicTraining) program).addExercise(new BasicExercise("Shoulder Press", 20));
+		        break;
+		    case 10:
+		        program = new CardioDecorator(program);
+		        break;
+		    case 11:
+		        program = new StretchingDecorator(program);
+		        break;
+		    case 0:
+		        devam = false;
+		        System.out.println("\n=== OLUŞTURULAN PROGRAM ===");
+		        System.out.println("Açıklama: " + program.getDescription());
+		        System.out.println("Toplam Süre: " + program.getDuration() + " dk");
+		        System.out.println("Yakilan Kalori" + program.getCalori() + " cl");
+		        break;
+		    default:
+		        System.out.println("Geçersiz seçim, lütfen tekrar deneyin.");
+		        break;
+		}
+
+		}
+	}
 
 
 	

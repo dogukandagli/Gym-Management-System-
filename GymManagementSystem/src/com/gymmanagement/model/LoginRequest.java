@@ -1,5 +1,6 @@
 package com.gymmanagement.model;
 
+import com.gymmanagement.user.User;
 
 public class LoginRequest {
     public String email;

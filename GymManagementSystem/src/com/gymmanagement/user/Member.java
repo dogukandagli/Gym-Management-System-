@@ -1,7 +1,10 @@
-package com.gymmanagement.model;
+package com.gymmanagement.user;
 
 import java.util.Date;
 import java.util.List;
+
+import com.gymmanagement.model.MembershipType;
+import com.gymmanagement.model.*;
 
 public class Member extends User {
     private MembershipType memberShipType;

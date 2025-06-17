@@ -4,12 +4,12 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.gymmanagement.model.Admin;
 import com.gymmanagement.model.ClassSession;
-import com.gymmanagement.model.Coach;
 import com.gymmanagement.model.Gym;
-import com.gymmanagement.model.Member;
-import com.gymmanagement.model.User;
+import com.gymmanagement.user.Admin;
+import com.gymmanagement.user.Coach;
+import com.gymmanagement.user.Member;
+import com.gymmanagement.user.User;
 
 public class Database {
     private static Database instance;

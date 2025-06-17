@@ -1,4 +1,4 @@
-package com.gymmanagement.model;
+package com.gymmanagement.user;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gymmanagement.database.Database;
+import com.gymmanagement.model.*;
 
 public class Coach extends User {
     private int experienceYears;

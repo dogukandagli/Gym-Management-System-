@@ -1,6 +1,8 @@
 package com.gymmanagement;
 
 import com.gymmanagement.model.*;
+import com.gymmanagement.user.Admin;
+import com.gymmanagement.user.Member;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -77,7 +79,6 @@ public class Main {
 
 	    System.out.print("Kullanıcı ID: ");
 	    String userID = scanner.nextLine();
-	    scanner.nextLine();
 	    System.out.print("Şifre: ");
 	    String password = scanner.nextLine();
 
@@ -112,18 +113,13 @@ public class Main {
 	    while (selectedGym == null) {
 	        System.out.print("\nLütfen kayıt olmak istediğiniz Gym ID'sini girin: ");
 	        String selectedID = scanner.nextLine();
-	        scanner.nextLine(); // dummy newline temizliği
 
-	        for (Gym gym : Gyms) {
-	            if (gym.getGymID() == selectedID) {
-	                selectedGym = gym;
-	                break;
-	            }
-	        }
-
+	        selectedGym = Database.getInstance().findGymById(selectedID);
 	        if (selectedGym == null) {
 	            System.out.println("❌ Geçersiz Gym ID. Lütfen uygun ID'lerden birini seçin.");
-	        }
+	        } else {
+        	    System.out.println("✅ Seçilen Gym: " + selectedGym.getLocation());
+        	}
 	    }
 	    
 	    System.out.print("Boy (cm): ");

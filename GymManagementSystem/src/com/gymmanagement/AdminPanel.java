@@ -1,5 +1,8 @@
 package com.gymmanagement;
 import com.gymmanagement.model.*;
+import com.gymmanagement.user.Admin;
+import com.gymmanagement.user.Coach;
+import com.gymmanagement.user.Member;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -10,6 +13,8 @@ import java.util.Scanner;
 import com.gymmanagement.database.Database;
 
 public class AdminPanel {
+	AdminPanel instance;
+	
 
 	public static void AdminPanelShow(Admin admin) {
 		
@@ -18,6 +23,7 @@ public class AdminPanel {
         
         
         do {
+        	
             System.out.println("\n=== Admin Panel ===");
             System.out.println("1. Üye Ekle");
             System.out.println("2. Ders Ekle");
@@ -102,23 +108,7 @@ public class AdminPanel {
                     System.out.println("Antrenor eklendi.");
                     break;
                 case 4:
-                	System.out.println("Üyeler listeleniyor...");
-                	System.out.println("1 - Tüm üyeleri listele");
-                	System.out.println("2 - Gym ID'ye göre filtrele");
-                	System.out.print("Seçiminiz: ");
-                	int secim = scanner.nextInt();
-                	switch (secim) {
-                	    case 1:
-                	        Admin.getInstance().listMembers(); 
-                	        break;
-                	    case 2:
-                	    	System.out.print("Lütfen görüntülemek istediğiniz salonun Gym ID'sini girin: ");
-                	    	 String selectedGymID = scanner.nextLine();
-                	    	 Admin.getInstance().listMembersByGymID(selectedGymID); 
-                	        break;
-                	    default:
-                	        System.out.println("Geçersiz seçim. Lütfen 1 veya 2 girin.");
-                	}
+                	listMembers();
                 	break;
                     
                 case 5:
@@ -136,7 +126,28 @@ public class AdminPanel {
             }
         } while (choice != 6);
 	}
-	private static void approvalMember() {
+	public static void listMembers() {
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Üyeler listeleniyor...");
+    	System.out.println("1 - Tüm üyeleri listele");
+    	System.out.println("2 - Gym ID'ye göre filtrele");
+    	System.out.print("Seçiminiz: ");
+    	int secim = scanner.nextInt();
+    	switch (secim) {
+    	    case 1:
+    	        Admin.getInstance().listMembers(); 
+    	        break;
+    	    case 2:
+    	    	System.out.print("Lütfen görüntülemek istediğiniz salonun Gym ID'sini girin: ");
+    	    	 String selectedGymID = scanner.nextLine();
+    	    	 Admin.getInstance().listMembersByGymID(selectedGymID); 
+    	        break;
+    	    default:
+    	        System.out.println("Geçersiz seçim. Lütfen 1 veya 2 girin.");
+    	}
+	}
+	
+	public static  void approvalMember() {
 	    Scanner scanner = new Scanner(System.in);
 	    System.out.println(" Onay bekleyen üyelikler:");
 	    Admin.getInstance().printPassiveMembers();
@@ -163,7 +174,7 @@ public class AdminPanel {
 	    }
 	}
 
-	private static void addCoach(Admin admin) {
+	public static void addCoach(Admin admin) {
 		   Scanner scanner = new Scanner(System.in);
 		   
 		   System.out.println("Eklenmek istenen gym ID'yi giriniz.");
@@ -245,8 +256,5 @@ public class AdminPanel {
 	    System.out.println("✅ Yeni spor salonu eklendi: " + name + " (" + location + ")");
 	}
 
-
-	
-	
 	
 }

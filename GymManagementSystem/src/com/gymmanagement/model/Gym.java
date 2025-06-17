@@ -3,6 +3,8 @@ package com.gymmanagement.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gymmanagement.user.Coach;
+
 public class Gym {
     private String name;
     private String gymID;

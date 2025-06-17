@@ -2,6 +2,8 @@ package com.gymmanagement.model;
 
 import java.time.LocalDateTime;
 
+import com.gymmanagement.user.Member;
+
 public class Payment {
     private int id;
     private Member member;

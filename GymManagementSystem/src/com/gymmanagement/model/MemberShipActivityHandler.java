@@ -1,5 +1,7 @@
 package com.gymmanagement.model;
 
+import com.gymmanagement.user.Member;
+
 public class MemberShipActivityHandler extends BaseHandler {
 
 	public boolean handle(LoginRequest request) {

@@ -1,8 +1,9 @@
-package com.gymmanagement.model;
+package com.gymmanagement.user;
 
 import java.util.List;
 import java.util.Scanner;
 
+import com.gymmanagement.model.*;
 import com.gymmanagement.database.Database;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class Admin extends User {
     public void printPassiveMembers() {
         System.out.println(" Pasif Üyeler:");
         for (Member m : passiveMembers) {
-            System.out.println(" - " + m.getName() + " (" + m.getEmail() + ")");
+            System.out.println(m.getUserID()+" - " + m.getName() + " (" + m.getEmail() + ")");
         }
     }
     

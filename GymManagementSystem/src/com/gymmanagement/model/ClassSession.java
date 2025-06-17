@@ -3,6 +3,10 @@ package com.gymmanagement.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.gymmanagement.user.Coach;
+import com.gymmanagement.user.Member;
+
 import java.time.format.DateTimeFormatter;
 public class ClassSession {
     private String name;
