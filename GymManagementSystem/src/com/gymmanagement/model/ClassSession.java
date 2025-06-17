@@ -16,6 +16,7 @@ public class ClassSession {
     private List<Member> members;
     private Coach coach;
     private Gym gym;
+    private int currentCapacity = 0;
     
     public ClassSession(String name, String description, LocalDateTime dateTime, int capacity, Coach coach, Gym gym) {
         this.name = name;
@@ -25,6 +26,7 @@ public class ClassSession {
         this.coach = coach;
         this.members = new ArrayList<>();
         this.gym=gym;
+
     }
 
     // Getters and Setters
@@ -84,10 +86,12 @@ public class ClassSession {
         if (members.size() >= capacity) {
             return false;
         }
+        this.currentCapacity++;
         return members.add(member);
     }
 
     public boolean removeMember(Member member) {
+    	this.currentCapacity--;
         return members.remove(member);
     }
 
@@ -96,8 +100,19 @@ public class ClassSession {
     }
 
     public int getAvailableSpots() {
-        return capacity - members.size();
+        return capacity - currentCapacity;
     }
+    
+    public int getCurrentCapacity() 
+    {
+    	return currentCapacity;
+    }
+    
+    public void setCurrentCapacity(int data) 
+    {
+    	this.currentCapacity = data;
+    }
+
 
     // Manual JSON serialization
     public String toJson() {

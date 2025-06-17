@@ -2,11 +2,15 @@ package com.gymmanagement;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
+import org.w3c.dom.ls.LSOutput;
+
 import com.gymmanagement.database.Database;
+import com.gymmanagement.model.ClassSession;
 import com.gymmanagement.model.Gym;
 import com.gymmanagement.user.*;
 
@@ -27,7 +31,7 @@ public class UserPanel
 	        System.out.println("1. View and Update My Information");
 	        System.out.println("2. View My Membership Information");
 	        System.out.println("3. List Gyms and Check In");
-	        System.out.println("4. View Training Program");
+	        System.out.println("4. View Classes");
 	        System.out.println("5. View Nutrition Program");
 	        System.out.println("6. My Activity History");
 	        System.out.println("7. Exit");
@@ -188,10 +192,47 @@ public class UserPanel
 	        		System.out.println();
 	        		
 	        		trainingProgram(user);
-
+    			    Database.getInstance().updateMember((Member) user);
+    			    
 	        		break;
 	        	case 4:
-	        		trainingProgram(user);
+	        		
+	        		List<ClassSession> classes = Database.getInstance().loadClasses();
+	        		List<ClassSession> availableClasses = new ArrayList<>();
+
+	        		System.out.println("=== Available Classes in Your Gym: " + user.getGym().getName() + " ===");
+	        		System.out.println();
+
+	        		int index = 1;
+	        		for (ClassSession cl : classes) {
+	        		    if (cl.getGym().getGymID().equals(user.getGym().getGymID())) {
+	        		        if (cl.getAvailableSpots() > 0) {
+	        		            System.out.println(index + ". " + cl.getName()+ " | Time: " + cl.getDateTime() + 
+	        		                               " | Capacity: " + cl.getMembers().size() + "/" + cl.getCapacity());
+	        		            availableClasses.add(cl);
+	        		            index++;
+	        		        }
+	        		    }
+	        		}
+
+	        		if (availableClasses.isEmpty()) {
+	        		    System.out.println("No available classes at your gym.");
+	        		} else {
+	        		    System.out.print("Enter the number of the class to join: ");
+	        		    int selection = scanner.nextInt();
+	        		    scanner.nextLine();
+
+	        		    if (selection >= 1 && selection <= availableClasses.size()) {
+	        		        ClassSession selectedClass = availableClasses.get(selection - 1);
+	        		        selectedClass.addMember(user); 
+	        		        selectedClass.setCurrentCapacity(selectedClass.getCurrentCapacity() + 1); 
+	        		        Database.getInstance().saveClasses(classes); 
+
+	        		        System.out.println("You have successfully joined the class: " + selectedClass.getName());
+	        		    } else {
+	        		        System.out.println("Invalid class selection.");
+	        		    }
+	        		}
 	        		
 	        			break;
 	        	case 5:
@@ -213,6 +254,7 @@ public class UserPanel
 	        	        {
 	        	            System.out.println(act);
 	        	        }
+	        	        
 	        	    }
 	        	    System.out.println();
 	        	    break;
