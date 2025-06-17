@@ -264,7 +264,7 @@ public class Database {
     public void updateMember(Member updateMember) {
         List<Member> members = loadMembers();
         for (int i = 0; i < members.size(); i++) {
-            if (members.get(i).getName().equalsIgnoreCase(updateMember.getName())) {
+            if (members.get(i).getId() == (updateMember.getId())) {
             	members.set(i, updateMember);
                 break;
             }

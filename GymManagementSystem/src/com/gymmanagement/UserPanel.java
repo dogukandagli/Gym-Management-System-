@@ -73,7 +73,7 @@ public class UserPanel
 		        				user.setEmail(newEmail);
 		        				
 
-		        				// send info to database
+		        				Database.getInstance().updateMember((Member) user);
 		        				
 		        				System.out.println("Email has been changed.");
 		        				System.out.println();
@@ -85,9 +85,8 @@ public class UserPanel
 		        				
 		        				float newHeight = scanner.nextFloat();
 		        				user.setHeight(newHeight);
-		        				
-		        				
-		        				// send info to database
+		        					   			
+		        				Database.getInstance().updateMember((Member) user);
 		        				
 		        				System.out.println("Height has been updated.");
 		        				System.out.println();
@@ -100,8 +99,7 @@ public class UserPanel
 		        				float newWeight = scanner.nextFloat();
 		        				user.setWeight(newWeight);
 		        				
-
-		        				// send info to database
+		        			    Database.getInstance().updateMember((Member) user);
 		        				
 		        				System.out.println("Weight has been updated.");
 		        				System.out.println();
@@ -182,8 +180,6 @@ public class UserPanel
 	        	        user.setGym(selectedGym); 
 	        	        System.out.println("Checked into: " + selectedGym.getName() + " at " + checkInDate);
 	        	        
-	        	        // adding to activity will be implemented
-
 	        	    } 
 	        	    catch (ParseException e) 
 	        	    {
@@ -192,9 +188,7 @@ public class UserPanel
 	        		System.out.println();
 	        		
 	        		trainingProgram(user);
-	        		
-	        		
-	        		
+
 	        		break;
 	        	case 4:
 	        		trainingProgram(user);
@@ -259,7 +253,7 @@ public class UserPanel
 		    
 		    switch (secim) {
 		    case 1:
-		            ((BasicTraining) program).addExercise(new BasicExercise("Bench Press", 20));
+		         ((BasicTraining) program).addExercise(new BasicExercise("Bench Press", 20));
 		        break;
 		    case 2:
 		         ((BasicTraining) program).addExercise(new BasicExercise("Dumbbell Fly", 15));
