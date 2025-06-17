@@ -198,8 +198,10 @@ public class Database {
     public void saveClasses(List<ClassSession> classes) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(CLASSES_FILE))) {
             for (ClassSession c : classes) {
-                writer.write(c.toJson());
-                writer.newLine();
+            	if (c != null) {
+                    writer.write(c.toJson());
+                    writer.newLine();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

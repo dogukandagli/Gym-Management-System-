@@ -1,1 +1,5 @@
-{"name":"FitCity Bahçelievler","gymID":"GYM01","location":"İstanbul - Bahçelievler","category":"Premium","monthlyEntries":0}
+{"name":"MacFit Kadıköy","gymID":"gym001","location":"İstanbul - Kadıköy","category":"PREMIUM","monthlyEntries":300}
+{"name":"FitZone Bornova","gymID":"gym002","location":"İzmir - Bornova","category":"BASIC","monthlyEntries":120}
+{"name":"PowerGym Çankaya","gymID":"gym003","location":"Ankara - Çankaya","category":"STUDENT","monthlyEntries":180}
+{"name":"EliteFit Nişantaşı","gymID":"gym004","location":"İstanbul - Nişantaşı","category":"PREMIUM","monthlyEntries":400}
+{"name":"Forme Bahçelievler","gymID":"gym005","location":"Ankara - Bahçelievler","category":"BASIC","monthlyEntries":150}

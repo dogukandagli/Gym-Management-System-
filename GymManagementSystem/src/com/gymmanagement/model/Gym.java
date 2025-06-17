@@ -7,11 +7,11 @@ public class Gym {
     private String name;
     private String gymID;
     private String location;
-    private String category;
+    private MembershipType category;
     private List<Coach> assignedCoaches;
     private int monthlyEntries;
 
-    public Gym(String name, String gymID, String location, String category) {
+    public Gym(String name, String gymID, String location, MembershipType category) {
         this.name = name;
         this.gymID = gymID;
         this.location = location;
@@ -50,11 +50,11 @@ public class Gym {
         this.location = location;
     }
 
-    public String getCategory() {
+    public MembershipType getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(MembershipType category) {
         this.category = category;
     }
 
@@ -99,7 +99,8 @@ public class Gym {
                              .replace("\"", "")
                              .split(",");
 
-        String name = "", gymID = "", location = "", category = "";
+        String name = "", gymID = "", location = "";
+        MembershipType category = null;
         int monthlyEntries = 0;
 
         for (String part : parts) {
@@ -107,11 +108,26 @@ public class Gym {
             if (kv.length < 2) continue;
 
             switch (kv[0].trim()) {
-                case "name": name = kv[1].trim(); break;
-                case "gymID": gymID = kv[1].trim(); break;
-                case "location": location = kv[1].trim(); break;
-                case "category": category = kv[1].trim(); break;
-                case "monthlyEntries": monthlyEntries = Integer.parseInt(kv[1].trim()); break;
+                case "name":
+                    name = kv[1].trim();
+                    break;
+                case "gymID":
+                    gymID = kv[1].trim();
+                    break;
+                case "location":
+                    location = kv[1].trim();
+                    break;
+                case "category":
+                    try {
+                        category = MembershipType.valueOf(kv[1].trim().toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("❌ Geçersiz kategori: " + kv[1]);
+                        return null;
+                    }
+                    break;
+                case "monthlyEntries":
+                    monthlyEntries = Integer.parseInt(kv[1].trim());
+                    break;
             }
         }
 
@@ -119,4 +135,5 @@ public class Gym {
         g.monthlyEntries = monthlyEntries;
         return g;
     }
+
 }

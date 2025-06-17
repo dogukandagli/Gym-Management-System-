@@ -1,6 +1,7 @@
 package com.gymmanagement.model;
 
 import java.util.List;
+import java.util.Scanner;
 
 import com.gymmanagement.database.Database;
 
@@ -8,19 +9,58 @@ import java.util.ArrayList;
 
 public class Admin extends User {
     private boolean isActive;
-
+    private static Admin instance; 
+    private List<Member> passiveMembers = new ArrayList<>();
+    
     public Admin(String userID, String password, String email, String name, String role,Gym gym) {
         super(userID, password, email, name,role,gym);
         this.isActive = true;
     }
+    
+    public static Admin getInstance() {
+        if (instance == null) {
+            instance = Database.getInstance().findAdminById("1");
+        }
+        return instance;
+    }
+
 
     @Override
     public boolean login(String userID, String password) {
         return isActive && getUserID().equals(userID) && getPassword().equals(password);
     }
 
-    // Getters and Setters
+    public void pasifMember(Member member) {
+        if (!member.isActive()) {
+            passiveMembers.add(member);
+            System.out.println(" Üye pasif olarak eklendi: " + member.getName());
+        } else {
+            System.out.println(" Bu üye aktif durumda, pasif üyeler listesine eklenemez.");
+        }
+    }
+    public void printPassiveMembers() {
+        System.out.println(" Pasif Üyeler:");
+        for (Member m : passiveMembers) {
+            System.out.println(" - " + m.getName() + " (" + m.getEmail() + ")");
+        }
+    }
     
+    public void removePassiveMember(Member member) {
+        if (passiveMembers.remove(member)) {
+            System.out.println("✅ Pasif üyeler listesinden silindi: " + member.getName());
+        } else {
+            System.out.println("❌ Üye pasif listede bulunamadı: " + member.getName());
+        }
+    }
+    
+    public Member findPassiveMemberByID(String userID) {
+        for (Member m : passiveMembers) {
+            if (m.getUserID().equals(userID)) {
+                return m;
+            }
+        }
+        return null; 
+    }
 
     public boolean isActive() {
         return isActive;
@@ -103,7 +143,23 @@ public class Admin extends User {
 	        getGym() != null ? getGym().getGymID() : ""
 	    );
 	}
+   public void listMembersByGymID(String selectedGymID ) {
+	  
 
+	    List<Member> members = Database.getInstance().loadMembers();
+
+	
+
+	    if (members.isEmpty()) {
+	        System.out.println("Bu Gym ID'ye kayıtlı üye bulunamadı.");
+	    } else {
+	        System.out.println("=== " + selectedGymID + " ID'li salonun üyeleri ===");
+	        for (Member m : members) {
+	        	if(m.getGym().getId()==selectedGymID)
+	        		System.out.println("- " + m.getUserID() + " | " + m.getName() + " | " + m.getEmail());
+	        }
+	    }
+	}
 
     public static Admin fromJson(String json) {
         String[] parts = json.replace("{", "").replace("}", "").replace("\"", "").split(",");
@@ -130,4 +186,6 @@ public class Admin extends User {
         a.setActive(isActive);
         return a;
     }
+
+	
 } 

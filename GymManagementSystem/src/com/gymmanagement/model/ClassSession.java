@@ -11,17 +11,26 @@ public class ClassSession {
     private int capacity;
     private List<Member> members;
     private Coach coach;
-
-    public ClassSession(String name, String description, LocalDateTime dateTime, int capacity, Coach coach) {
+    private Gym gym;
+    
+    public ClassSession(String name, String description, LocalDateTime dateTime, int capacity, Coach coach, Gym gym) {
         this.name = name;
         this.description = description;
         this.dateTime = dateTime;
         this.capacity = capacity;
         this.coach = coach;
         this.members = new ArrayList<>();
+        this.gym=gym;
     }
 
     // Getters and Setters
+    public Gym getGym() {
+        return gym;
+    }
+    public void setGym(Gym gym) {
+        this.gym = gym;
+    }
+    
     public String getName() {
         return name;
     }
@@ -92,32 +101,70 @@ public class ClassSession {
         String formattedDate = dateTime.format(formatter);
 
         return String.format(
-            "{\"name\":\"%s\",\"description\":\"%s\",\"dateTime\":\"%s\",\"capacity\":%d,\"coachID\":\"%s\"}",
-            name, description, formattedDate, capacity, coach != null ? coach.getUserID() : ""
+            "{\"name\":\"%s\",\"description\":\"%s\",\"dateTime\":\"%s\",\"capacity\":%d,\"coachID\":\"%s\",\"gymID\":\"%s\"}",
+            name,
+            description,
+            formattedDate,
+            capacity,
+            coach != null ? coach.getUserID() : "",
+            gym != null ? gym.getGymID() : ""
         );
     }
 
+
     public static ClassSession fromJson(String json) {
-        String[] parts = json.replace("{", "").replace("}", "").replace("\"", "").split(",");
-        String name = "", description = "", dateTimeStr = "", coachID = "";
+        String[] parts = json.replace("{", "")
+                             .replace("}", "")
+                             .replace("\"", "")
+                             .split(",");
+
+        String name = "", description = "", dateTimeStr = "", coachID = "", gymID = "";
         int capacity = 0;
 
         for (String part : parts) {
             String[] kv = part.split(":", 2);
             if (kv.length < 2) continue;
-            switch (kv[0]) {
-                case "name": name = kv[1]; break;
-                case "description": description = kv[1]; break;
-                case "dateTime": dateTimeStr = kv[1]; break;
-                case "capacity": capacity = Integer.parseInt(kv[1]); break;
-                case "coachID": coachID = kv[1]; break;
+
+            switch (kv[0].trim()) {
+                case "name":
+                    name = kv[1].trim();
+                    break;
+                case "description":
+                    description = kv[1].trim();
+                    break;
+                case "dateTime":
+                    dateTimeStr = kv[1].trim();
+                    break;
+                case "capacity":
+                    capacity = Integer.parseInt(kv[1].trim());
+                    break;
+                case "coachID":
+                    coachID = kv[1].trim();
+                    break;
+                case "gymID":
+                    gymID = kv[1].trim();
+                    break;
             }
         }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]");
-        LocalDateTime parsedDate = LocalDateTime.parse(dateTimeStr, formatter);
+        LocalDateTime parsedDate;
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            parsedDate = LocalDateTime.parse(dateTimeStr, formatter);
+        } catch (Exception e) {
+            System.out.println("❌ Tarih parse edilemedi: " + dateTimeStr);
+            return null;
+        }
 
         Coach coach = com.gymmanagement.database.Database.getInstance().findCoachById(coachID);
-        return new ClassSession(name, description, parsedDate, capacity, coach);
+        Gym gym = com.gymmanagement.database.Database.getInstance().findGymById(gymID);
+
+        if (gym == null) {
+            System.out.println("❌ Gym bulunamadı: " + gymID);
+            return null;
+        }
+
+        return new ClassSession(name, description, parsedDate, capacity, coach, gym);
     }
+
 }

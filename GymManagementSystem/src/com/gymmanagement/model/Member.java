@@ -13,7 +13,7 @@ public class Member extends User {
     public int ID;
 
     public Member(String userID, String password, String email, String name,String role,Gym gym,
-                 MembershipType memberShipType, Date memberShipStart, Date memberShipEnd,
+    		MembershipType memberShipType, Date memberShipStart, Date memberShipEnd,
                  double height, double weight) {
         super(userID, password, email, name,role,gym);
         this.memberShipType = memberShipType;
