@@ -3,6 +3,7 @@ import com.gymmanagement.model.*;
 import com.gymmanagement.user.Admin;
 import com.gymmanagement.user.Coach;
 import com.gymmanagement.user.Member;
+import com.gymmanagement.util.ScreenUtil;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -24,6 +25,7 @@ public class AdminPanel {
         
         do {
         	
+            ScreenUtil.clearScreen();
             System.out.println("\n=== Admin Panel ===");
             System.out.println("1. Üye Ekle");
             System.out.println("2. Ders Ekle");
@@ -39,37 +41,41 @@ public class AdminPanel {
 
             switch (choice) {
                 case 1:
-                    System.out.println("Üye ekleme işlemi...");
+                    ScreenUtil.clearScreen();
+                    System.out.println("Üye ekleme işlemi başlatılıyor...");
                     approvalMember();
                     break;
                 case 2:
-                	scanner = new Scanner(System.in);
-                	System.out.println("Ders ekleme işlemi...\n");
-                	
-                	System.out.println("Eklenmek istenen gym ID'yi giriniz.");
-                	System.out.println("📋 Gym'leri listelemek için '1' yazın, doğrudan gym ID girmek için ID'yi yazın:");
-                	System.out.print("Seçiminiz: ");
-                	String input = scanner.nextLine();
-                	scanner.nextLine();
+                    ScreenUtil.clearScreen();
+                    scanner = new Scanner(System.in);
+                    System.out.println("Ders ekleme işlemi...\n");
+                    
+                    System.out.println("Eklenmek istenen gym ID'yi giriniz.");
+                    System.out.println("📋 Gym'leri listelemek için '1' yazın, doğrudan gym ID girmek için ID'yi yazın:");
+                    System.out.print("Seçiminiz: ");
+                    String input = scanner.nextLine();
+                    scanner.nextLine();
 
-                	if (input.equals("1")) {
-                	    System.out.println("🔽 Mevcut Gym Listesi:");
-                	    for (Gym gym : Database.getInstance().loadGyms()) {
-                	        System.out.println("➡ Gym ID: " + gym.getGymID() + " | Lokasyon: " + gym.getLocation() + " | Kategori: " + gym.getCategory());
-                	    }
+                    if (input.equals("1")) {
+                        ScreenUtil.clearScreen();
+                        System.out.println("🔽 Mevcut Gym Listesi:");
+                        for (Gym gym : Database.getInstance().loadGyms()) {
+                            System.out.println("➡ Gym ID: " + gym.getGymID() + " | Lokasyon: " + gym.getLocation() + " | Kategori: " + gym.getCategory());
+                        }
 
-                	    System.out.print("📥 Şimdi eklenmek istenen gym ID'yi girin: ");
-                	    input = scanner.nextLine().trim();
-                	}
-                	Gym selectedGym = Database.getInstance().findGymById(input);
-                		
-                	if (selectedGym == null) {
-                	    System.out.println("❌ Geçersiz Gym ID. İşlem iptal edildi.");
-                	    return;
-                	} else {
-                	    System.out.println("✅ Seçilen Gym: " + selectedGym.getLocation());
-                	}
-                	
+                        System.out.print("📥 Şimdi eklenmek istenen gym ID'yi girin: ");
+                        input = scanner.nextLine().trim();
+                    }
+                    Gym selectedGym = Database.getInstance().findGymById(input);
+                    
+                    if (selectedGym == null) {
+                        System.out.println("❌ Geçersiz Gym ID. İşlem iptal edildi.");
+                        return;
+                    } else {
+                        System.out.println("✅ Seçilen Gym: " + selectedGym.getLocation());
+                    }
+                    
+                    ScreenUtil.clearScreen();
                     System.out.println("Ders ismi giriniz :");
                     String name = scanner.nextLine();
                     scanner.nextLine(); 
@@ -84,25 +90,25 @@ public class AdminPanel {
                     String coachID = scanner.nextLine();
                     
                     if (coachID.equals("1"))  {
-                    	admin.listCoach();
-                    	
-                    	 System.out.println("Hoca ID giriniz : (listelemek icin 1 e tiklayiniz)  :");
-                    	 coachID = scanner.nextLine();
-                    	 
+                        ScreenUtil.clearScreen();
+                        admin.listCoach();
+                        
+                        System.out.println("Hoca ID giriniz : (listelemek icin 1 e tiklayiniz)  :");
+                        coachID = scanner.nextLine();
                     }
                     
                     Coach coach = Database.getInstance().findCoachById(coachID);
                     Date oldDate = new Date();
                     LocalDateTime startDate = LocalDateTime.now();
                     
-                    
-                    ClassSession classes = new ClassSession( name ,  description , startDate ,capacity,coach,selectedGym );
+                    ClassSession classes = new ClassSession(name, description, startDate, capacity, coach, selectedGym);
                     coach.addClasses(classes);
                     Database.getInstance().addClass(classes);
                     System.out.println("Ders eklendi.");
                     
                     break;
                 case 3:
+                    ScreenUtil.clearScreen();
                     System.out.println("Eğitmen ekleme işlemi...");
                     
                     addCoach(admin);
@@ -110,21 +116,25 @@ public class AdminPanel {
                     System.out.println("Antrenor eklendi.");
                     break;
                 case 4:
-                	listMembers();
-                	break;
+                    ScreenUtil.clearScreen();
+                    listMembers();
+                    break;
                     
                 case 5:
+                    ScreenUtil.clearScreen();
                     System.out.println("Aktif Üyeler listeleniyor...");
                     admin.printActiveMemberStats();
                     break;
                 case 6:
-                	addNewGym();
+                    ScreenUtil.clearScreen();
+                    addNewGym();
                     break;
                 case 7:
+                    ScreenUtil.clearScreen();
                     showFinancialReport();
                     break;
                 case 8: 
-                	System.out.println("Admin çıkış yapıyor...");
+                    System.out.println("Admin çıkış yapıyor...");
                     break;
                 default:
                     System.out.println("Geçersiz seçim!");
@@ -140,9 +150,11 @@ public class AdminPanel {
     	int secim = scanner.nextInt();
     	switch (secim) {
     	    case 1:
+    	        ScreenUtil.clearScreen();
     	        Admin.getInstance().listMembers(); 
     	        break;
     	    case 2:
+    	    	ScreenUtil.clearScreen();
     	    	System.out.print("Lütfen görüntülemek istediğiniz salonun Gym ID'sini girin: ");
     	    	 String selectedGymID = scanner.nextLine();
     	    	 Admin.getInstance().listMembersByGymID(selectedGymID); 
@@ -154,6 +166,7 @@ public class AdminPanel {
 	
 	public static  void approvalMember() {
 	    Scanner scanner = new Scanner(System.in);
+	    ScreenUtil.clearScreen();
 	    System.out.println(" Onay bekleyen üyelikler:");
 	    Admin.getInstance().printPassiveMembers();
 
@@ -181,6 +194,7 @@ public class AdminPanel {
 
 	public static void addCoach(Admin admin) {
         Scanner scanner = new Scanner(System.in);
+        ScreenUtil.clearScreen();
         
         System.out.println("Eklenmek istenen gym ID'yi giriniz.");
         System.out.println("📋 Gym'leri listelemek için '1' yazın, doğrudan gym ID girmek için ID'yi yazın:");
@@ -231,6 +245,7 @@ public class AdminPanel {
     }
 	public static void addNewGym() {
 	    Scanner scanner = new Scanner(System.in);
+	    ScreenUtil.clearScreen();
 
 	    System.out.println("🏋️ Yeni Gym Ekliyorsunuz...");
 
@@ -284,16 +299,11 @@ public class AdminPanel {
             totalMonthlyIncome += monthlyIncome;
             totalYearlyIncome += yearlyIncome;
             
-            System.out.printf("%-10s | %-15d | %-15d | %.2f TL\n",
-                type,
-                monthlyMembers,
-                yearlyMembers,
-                monthlyIncome + yearlyIncome);
+            System.out.printf("%-12s | %-16d | %-16d | %.2f TL\n",
+                type, monthlyMembers, yearlyMembers, monthlyIncome + yearlyIncome);
         }
         
         System.out.println("------------------------------------------------------------");
-        System.out.printf("Toplam Aylık Gelir: %.2f TL\n", totalMonthlyIncome);
-        System.out.printf("Toplam Yıllık Gelir: %.2f TL\n", totalYearlyIncome);
         System.out.printf("Toplam Gelir: %.2f TL\n", totalMonthlyIncome + totalYearlyIncome);
     }
 }

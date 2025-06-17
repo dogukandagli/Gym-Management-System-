@@ -4,6 +4,7 @@ import com.gymmanagement.model.*;
 import com.gymmanagement.user.Admin;
 import com.gymmanagement.user.Member;
 import com.gymmanagement.user.Coach;
+import com.gymmanagement.util.ScreenUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,10 +15,11 @@ import com.gymmanagement.database.Database;
 
 public class Main {
     public static void main(String[] args) {
-    	   Scanner scanner = new Scanner(System.in);
-    	   boolean flag = true;
-    	
+        Scanner scanner = new Scanner(System.in);
+        boolean flag = true;
+    
         while (flag) {
+            ScreenUtil.clearScreen();
             System.out.println("\n==== Gym Management System ====");
             System.out.println("1. Giriş Yap");
             System.out.println("2. Kayıt Ol");
@@ -31,6 +33,7 @@ public class Main {
                     handleLogin(scanner);
                     break;
                 case "2":
+                    ScreenUtil.clearScreen();
                     System.out.println("Kayıt işlemi başlatılıyor...");
                     addMember();
                     break;
@@ -46,6 +49,7 @@ public class Main {
     }
     
     private static void handleLogin(Scanner scanner) {
+        ScreenUtil.clearScreen();
         System.out.println("\nGiriş işlemi başlatılıyor...");
         
         System.out.println("\n=== Kullanıcı Tipi Seçimi ===");
@@ -75,6 +79,7 @@ public class Main {
                 return;
         }
         
+        ScreenUtil.clearScreen();
         System.out.println("\n=== GYM Management Login ===");
         System.out.print("Email: ");
         String email = scanner.nextLine();
@@ -87,6 +92,7 @@ public class Main {
         chain.setNext(new RoleVerificationHandler(role)).setNext(new MemberShipActivityHandler());
         
         if (chain.handle(request)) {
+            ScreenUtil.clearScreen();
             if (request.loggedInUser instanceof Admin) {
                 System.out.println("\n✅ Giriş Başarılı! Admin olarak giriş yapıyorsunuz...");
                 AdminPanel.AdminPanelShow((Admin) request.loggedInUser);
@@ -104,6 +110,7 @@ public class Main {
     
     private static void addMember() {
         Scanner scanner = new Scanner(System.in);
+        ScreenUtil.clearScreen();
 
         String userID = Database.getInstance().getNextUserID();
         System.out.println("Kullanıcı ID: " + userID + " (Otomatik atandı)");
@@ -129,7 +136,8 @@ public class Main {
                 System.out.print("❌ Geçersiz giriş. Tekrar girin (BASIC, PREMIUM, STUDENT): ");
             }
         }
-
+        
+        ScreenUtil.clearScreen();
         System.out.println("\nÜyelik Süresi Seçin:");
         System.out.println("1. Aylık Üyelik (" + membershipType.getMonthlyPrice() + " TL)");
         System.out.println("2. Yıllık Üyelik (" + membershipType.getYearlyPrice() + " TL)");
@@ -149,6 +157,7 @@ public class Main {
             }
         }
         
+        ScreenUtil.clearScreen();
         System.out.println("\nSeçtiğiniz üyelik tipine uygun spor salonları:");
         List<Gym> Gyms = Database.getInstance().loadGyms();
         for (Gym gym : Gyms) {
@@ -170,6 +179,7 @@ public class Main {
             }
         }
         
+        ScreenUtil.clearScreen();
         System.out.print("Boy (cm): ");
         double height = scanner.nextDouble();
 
@@ -188,6 +198,7 @@ public class Main {
         newMember.setActive(false);
         Admin.getInstance().pasifMember(newMember);
         
+        ScreenUtil.clearScreen();
         System.out.println("\n✅ Üyelik başarıyla oluşturuldu!");
         System.out.printf("Toplam Ücret: %.2f TL\n", newMember.getMembershipPrice());
     }
