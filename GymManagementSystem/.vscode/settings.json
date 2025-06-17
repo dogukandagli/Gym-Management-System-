@@ -1,5 +1,14 @@
 {
+  "java.project.sourcePaths": ["src"],
+  "java.project.outputPath": "target",
   "java.project.referencedLibraries": [
+    "lib/**/*.jar",
     "gson-2.10.1.jar"
-  ]
+  ],
+  "files.exclude": {
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+  }
 }

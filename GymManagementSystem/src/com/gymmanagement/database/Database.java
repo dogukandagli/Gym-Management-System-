@@ -13,11 +13,12 @@ import com.gymmanagement.user.User;
 
 public class Database {
     private static Database instance;
-    private final String MEMBERS_FILE = "data/Member.json";
-    private final String COACHES_FILE = "data/coach.json";
-    private final String ADMINS_FILE = "data/Admin.json";
-    private final String CLASSES_FILE = "data/classes.json";
-    private final String GYMS_FILE = "data/gyms.json";
+    private final String BASE_DIR = System.getProperty("user.dir") + "/GymManagementSystem";
+    private final String MEMBERS_FILE = BASE_DIR + "/data/Member.json";
+    private final String COACHES_FILE = BASE_DIR + "/data/coach.json";
+    private final String ADMINS_FILE = BASE_DIR + "/data/Admin.json";
+    private final String CLASSES_FILE = BASE_DIR + "/data/classes.json";
+    private final String GYMS_FILE = BASE_DIR + "/data/gyms.json";
 
 
     private Database() {
@@ -32,7 +33,7 @@ public class Database {
     }
 
     private void createDataDirectory() {
-        File directory = new File("data");
+        File directory = new File(BASE_DIR + "/data");
         if (!directory.exists()) {
             directory.mkdirs();
         }

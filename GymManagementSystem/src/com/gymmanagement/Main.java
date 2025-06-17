@@ -3,6 +3,7 @@ package com.gymmanagement;
 import com.gymmanagement.model.*;
 import com.gymmanagement.user.Admin;
 import com.gymmanagement.user.Member;
+import com.gymmanagement.user.Coach;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,15 +12,13 @@ import java.util.Scanner;
 
 import com.gymmanagement.database.Database;
 
-
 public class Main {
     public static void main(String[] args) {
-    	   Scanner scanner = new Scanner(System.in);
-    	   boolean flag = true;
-    	
-    	
-        while (true) {
-            System.out.println("==== Gym Management System ====");
+        Scanner scanner = new Scanner(System.in);
+        boolean flag = true;
+        
+        while (flag) {
+            System.out.println("\n==== Gym Management System ====");
             System.out.println("1. Giriş Yap");
             System.out.println("2. Kayıt Ol");
             System.out.println("3. Çıkış");
@@ -29,33 +28,7 @@ public class Main {
 
             switch (input) {
                 case "1":
-                    System.out.println("Giriş işlemi başlatılıyor...");
-                    System.out.println("=== GYM Management Login ===");
-                    System.out.print("Email: ");
-                    String email = scanner.nextLine();
-
-                    System.out.print("Şifre: ");
-                    String password = scanner.nextLine();
-             	
-                    System.out.print("Role gir: ");
-                    String role = scanner.nextLine();
-                    
-             	LoginRequest request = new LoginRequest(email,password);
-         		
-         		BaseHandler chain = new EmailandPasswordHandler();
-         		
-         		chain.setNext(new RoleVerificationHandler(role)).setNext(new MemberShipActivityHandler());
-         		
-         		if(chain.handle(request)) {
-         			if(request.loggedInUser instanceof Admin) {
-         				System.out.println("/n Giris Basarili , Admin olarak giris yapiyorsunuz...");
-         				AdminPanel.AdminPanelShow((Admin) request.loggedInUser);
-         			}
-         			if(request.loggedInUser instanceof Member) {
-         				System.out.println("/n Giris Basarili , Member olarak giris yapiyorsunuz...");
-         				UserPanel.UserPanelShow((Member) request.loggedInUser);
-         			}
-         		}
+                    handleLogin(scanner);
                     break;
                 case "2":
                     System.out.println("Kayıt işlemi başlatılıyor...");
@@ -70,8 +43,63 @@ public class Main {
                     break;
             }
         }
+    }
+    
+    private static void handleLogin(Scanner scanner) {
+        System.out.println("\nGiriş işlemi başlatılıyor...");
+        
+        System.out.println("\n=== Kullanıcı Tipi Seçimi ===");
+        System.out.println("1. Admin Girişi");
+        System.out.println("2. Üye Girişi");
+        System.out.println("3. Eğitmen Girişi");
+        System.out.println("4. Geri Dön");
+        System.out.print("Seçiminizi girin: ");
+        
+        String userType = scanner.nextLine();
+        String role = "";
+        
+        switch (userType) {
+            case "1":
+                role = "Admin";
+                break;
+            case "2":
+                role = "Member";
+                break;
+            case "3":
+                role = "Coach";
+                break;
+            case "4":
+                return;
+            default:
+                System.out.println("Geçersiz seçim!");
+                return;
+        }
+        
+        System.out.println("\n=== GYM Management Login ===");
+        System.out.print("Email: ");
+        String email = scanner.nextLine();
 
-		
+        System.out.print("Şifre: ");
+        String password = scanner.nextLine();
+        
+        LoginRequest request = new LoginRequest(email, password);
+        BaseHandler chain = new EmailandPasswordHandler();
+        chain.setNext(new RoleVerificationHandler(role)).setNext(new MemberShipActivityHandler());
+        
+        if (chain.handle(request)) {
+            if (request.loggedInUser instanceof Admin) {
+                System.out.println("\n✅ Giriş Başarılı! Admin olarak giriş yapıyorsunuz...");
+                AdminPanel.AdminPanelShow((Admin) request.loggedInUser);
+            } else if (request.loggedInUser instanceof Member) {
+                System.out.println("\n✅ Giriş Başarılı! Üye olarak giriş yapıyorsunuz...");
+                UserPanel.UserPanelShow((Member) request.loggedInUser);
+            } else if (request.loggedInUser instanceof Coach) {
+                System.out.println("\n✅ Giriş Başarılı! Eğitmen olarak giriş yapıyorsunuz...");
+                CoachPanel.CoachPanelShow((Coach) request.loggedInUser);
+            }
+        } else {
+            System.out.println("\n❌ Giriş başarısız! Email veya şifre hatalı.");
+        }
     }
     
     private static void addMember() {
