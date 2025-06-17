@@ -144,23 +144,27 @@ public class Admin extends User {
 	        getGym() != null ? getGym().getGymID() : ""
 	    );
 	}
-   public void listMembersByGymID(String selectedGymID ) {
-	  
+   public void listMembersByGymID(String selectedGymID) {
+       List<Member> members = Database.getInstance().loadMembers();
 
-	    List<Member> members = Database.getInstance().loadMembers();
-
-	
-
-	    if (members.isEmpty()) {
-	        System.out.println("Bu Gym ID'ye kayıtlı üye bulunamadı.");
-	    } else {
-	        System.out.println("=== " + selectedGymID + " ID'li salonun üyeleri ===");
-	        for (Member m : members) {
-	        	if(m.getGym().getId()==selectedGymID)
-	        		System.out.println("- " + m.getUserID() + " | " + m.getName() + " | " + m.getEmail());
-	        }
-	    }
-	}
+       if (members.isEmpty()) {
+           System.out.println("Bu Gym ID'ye kayıtlı üye bulunamadı.");
+       } else {
+           System.out.println("=== " + selectedGymID + " ID'li salonun üyeleri ===");
+           boolean foundMembers = false;
+           
+           for (Member m : members) {
+               if (m.getGym() != null && m.getGym().getGymID().equals(selectedGymID)) {
+                   System.out.println("- " + m.getUserID() + " | " + m.getName() + " | " + m.getEmail());
+                   foundMembers = true;
+               }
+           }
+           
+           if (!foundMembers) {
+               System.out.println("Bu Gym ID'ye kayıtlı aktif üye bulunamadı.");
+           }
+       }
+   }
 
     public static Admin fromJson(String json) {
         String[] parts = json.replace("{", "").replace("}", "").replace("\"", "").split(",");

@@ -2,6 +2,7 @@ package com.gymmanagement;
 
 import com.gymmanagement.user.Coach;
 import com.gymmanagement.model.ClassSession;
+import com.gymmanagement.util.ScreenUtil;
 import java.util.List;
 import java.util.Scanner;
 
@@ -11,6 +12,7 @@ public class CoachPanel {
         boolean running = true;
 
         while (running) {
+            ScreenUtil.clearScreen();
             System.out.println("\n=== Eğitmen Paneli ===");
             System.out.println("1. Derslerimi Görüntüle");
             System.out.println("2. Müsait Saatlerimi Ayarla");
@@ -23,15 +25,19 @@ public class CoachPanel {
 
             switch (choice) {
                 case "1":
+                    ScreenUtil.clearScreen();
                     viewMyClasses(coach);
                     break;
                 case "2":
+                    ScreenUtil.clearScreen();
                     manageAvailableHours(coach);
                     break;
                 case "3":
+                    ScreenUtil.clearScreen();
                     viewCertifications(coach);
                     break;
                 case "4":
+                    ScreenUtil.clearScreen();
                     updateProfile(coach);
                     break;
                 case "5":
@@ -56,10 +62,11 @@ public class CoachPanel {
                 System.out.println("Açıklama: " + session.getDescription());
                 System.out.println("Tarih: " + session.getDateTime());
                 System.out.println("Kapasite: " + session.getCapacity());
-                System.out.println("Katılımcı Sayısı: " + session.getMembers().size());
                 System.out.println("------------------------");
             }
         }
+        System.out.println("\nPress Enter to continue...");
+        new Scanner(System.in).nextLine();
     }
 
     private static void manageAvailableHours(Coach coach) {
@@ -74,6 +81,8 @@ public class CoachPanel {
         String choice = scanner.nextLine();
         // Burada müsait saat yönetimi implementasyonu yapılacak
         System.out.println("Bu özellik henüz implement edilmedi.");
+        System.out.println("\nPress Enter to continue...");
+        scanner.nextLine();
     }
 
     private static void viewCertifications(Coach coach) {
@@ -86,18 +95,38 @@ public class CoachPanel {
                 System.out.println("- " + cert);
             }
         }
+        System.out.println("\nPress Enter to continue...");
+        new Scanner(System.in).nextLine();
     }
 
     private static void updateProfile(Coach coach) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("\n=== Profil Güncelleme ===");
-        System.out.println("1. Bio Güncelle");
-        System.out.println("2. Sertifika Ekle");
+        System.out.println("1. Email Güncelle");
+        System.out.println("2. Bio Güncelle");
         System.out.println("3. Geri Dön");
         System.out.print("Seçiminiz: ");
 
         String choice = scanner.nextLine();
-        // Burada profil güncelleme implementasyonu yapılacak
-        System.out.println("Bu özellik henüz implement edilmedi.");
+        switch (choice) {
+            case "1":
+                System.out.print("Yeni email: ");
+                String newEmail = scanner.nextLine();
+                coach.setEmail(newEmail);
+                System.out.println("Email güncellendi.");
+                break;
+            case "2":
+                System.out.print("Yeni bio: ");
+                String newBio = scanner.nextLine();
+                coach.setBio(newBio);
+                System.out.println("Bio güncellendi.");
+                break;
+            case "3":
+                return;
+            default:
+                System.out.println("Geçersiz seçim!");
+        }
+        System.out.println("\nPress Enter to continue...");
+        scanner.nextLine();
     }
 } 
